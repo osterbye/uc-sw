@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SETTINGS>
+  <DEVICE>
+    <family>TMS570LS04x</family>
+    <device>TMS570LS0432PZ_FREERTOS</device>
+    <dilfile>halcogen.dil</dilfile>
+    <tools>ti</tools>
+  </DEVICE>
+  <VERSION>
+    <version>04.05.02</version>
+  </VERSION>
+  <HET>
+    <FILENAME>
+      <HET1ASMHDR>
+        <NAME/>
+      </HET1ASMHDR>
+      <HET1ASMSRC>
+        <NAME/>
+      </HET1ASMSRC>
+    </FILENAME>
+  </HET>
+</SETTINGS>
