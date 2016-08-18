@@ -61,6 +61,7 @@
 */
 
 /* USER CODE BEGIN (2) */
+#if 0
 /* USER CODE END */
 
 void main(void)
@@ -70,4 +71,5 @@ void main(void)
 }
 
 /* USER CODE BEGIN (4) */
+#endif
 /* USER CODE END */

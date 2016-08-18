@@ -1,7 +1,7 @@
 /*
  * main.c
  */
-int main(void) {
-	
-	return 0;
+/* Standard includes. */
+void main(void){
+	while (1);
 }
