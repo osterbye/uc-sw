@@ -14,7 +14,8 @@
 #include "os_queue.h"
 #include "os_semphr.h"
 
-
+/* other headers */
+#include "globalState.h"
 
 void vHeartbeat (void *pvParameters);
 
