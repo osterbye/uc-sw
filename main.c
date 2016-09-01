@@ -14,6 +14,8 @@
 #include "os_queue.h"
 #include "os_semphr.h"
 
+#include "cm_communication.h"
+
 /* other headers */
 #include "globalState.h"
 
@@ -26,6 +28,7 @@ void main(void){
 	//xTaskCreate( vTask1, "Task 1", 340, NULL, 2, NULL );
 
 	xTaskCreate( vHeartbeat, "HEARTBEAT", 400, NULL, 2, NULL );
+	xTaskCreate( vSendStatus, "SENDSTATUS", 400, NULL, 2, NULL );
 
 	//vTaskStartTrace(&traceBuff[0], 255);
 
