@@ -72,7 +72,7 @@ void dccInit(void)
     dccREG1->VALID0SEED = 1584U;          
     
     /** DCC1 Clock1 Counter Seed value configuration */
-    dccREG1->CNT1SEED   = 396000U;
+    dccREG1->CNT1SEED   = 792000U;
 
     /** DCC1 Clock1 Source 1 Select */
     dccREG1->CNT1CLKSRC = (uint32)((uint32)10U << 12U) |     /** DCC Enable / Disable Key */
@@ -82,6 +82,30 @@ void dccInit(void)
 
     /** DCC1 Global Control register configuration */
     dccREG1->GCTRL      = (uint32)0xAU |       /** Enable / Disable DCC1 */
+                          (uint32)((uint32)0xAU << 4U) | /** Error Interrupt */
+                          (uint32)((uint32)0x5U << 8U) | /** Single Shot mode */
+                          (uint32)((uint32)0xAU << 12U); /** Done Interrupt */
+
+
+    /** @b initialize @b DCC2 */
+
+    /** DCC2 Clock0 Counter Seed value configuration */
+    dccREG2->CNT0SEED   = 0U;
+    
+    /** DCC2 Clock0 Valid Counter Seed value configuration */
+    dccREG2->VALID0SEED = 0U;          
+    
+    /** DCC2 Clock1 Counter Seed value configuration */
+    dccREG2->CNT1SEED   = 0U;
+
+    /** DCC2 Clock1 Source 1 Select */
+    dccREG2->CNT1CLKSRC = (uint32)((uint32)0x5U << 12U) |     /** DCC Enable Key */
+                          (uint32) DCC2_CNT1_VCLK;  /** DCC2 Clock Source 1 */
+   
+    dccREG2->CNT0CLKSRC = (uint32)DCC2_CNT0_OSCIN;  /** DCC2 Clock Source 0 */
+
+    /** DCC2 Global Control register configuration */
+    dccREG2->GCTRL      = (uint32)0xAU |       /** Enable DCC2 */
                           (uint32)((uint32)0xAU << 4U) | /** Error Interrupt */
                           (uint32)((uint32)0x5U << 8U) | /** Single Shot mode */
                           (uint32)((uint32)0xAU << 12U); /** Done Interrupt */
@@ -335,7 +359,7 @@ void dccDisableNotification(dccBASE_t  *dcc, uint32 notification)
 /* USER CODE BEGIN (21) */
 /* USER CODE END */
 /*SAFETYMCUSW 134 S MR:12.2 <APPROVED> "LDRA Tool issue" */
-	dcc->GCTRL = ((dcc->GCTRL & 0xFFFF0F0FU) | ((~notification) & 0x0000F0F0U));
+    dcc->GCTRL = ((dcc->GCTRL & 0xFFFF0F0FU) | ((~notification) & 0x0000F0F0U));
 
 /* USER CODE BEGIN (22) */
 /* USER CODE END */
@@ -377,4 +401,44 @@ void dcc1GetConfigValue(dcc_config_reg_t *config_reg, config_value_type_t type)
         config_reg->CONFIG_CNT0CLKSRC = dccREG1->CNT0CLKSRC;
     }
 }
+
+/** @fn void dcc2GetConfigValue(rti_config_reg_t *config_reg, config_value_type_t type)
+*   @brief Get the initial or current values of the configuration registers
+*
+*    @param[in] *config_reg: pointer to the struct to which the initial or current value of the configuration registers need to be stored
+*    @param[in] type:     whether initial or current value of the configuration registers need to be stored
+*                        - InitialValue: initial value of the configuration registers will be stored in the struct pointed by config_reg
+*                        - CurrentValue: initial value of the configuration registers will be stored in the struct pointed by config_reg
+*
+*   This function will copy the initial or current value (depending on the parameter 'type') of the configuration registers to the struct pointed by config_reg
+*
+*/
+/* SourceId : DCC_SourceId_013 */
+/* DesignId : DCC_DesignId_012 */
+/* Requirements: HL_SR318 */
+void dcc2GetConfigValue(dcc_config_reg_t *config_reg, config_value_type_t type)
+{
+    if (type == InitialValue)
+    {
+        config_reg->CONFIG_GCTRL = DCC2_GCTRL_CONFIGVALUE;
+        config_reg->CONFIG_CNT0SEED = DCC2_CNT0SEED_CONFIGVALUE;
+        config_reg->CONFIG_VALID0SEED = DCC2_VALID0SEED_CONFIGVALUE;
+        config_reg->CONFIG_CNT1SEED = DCC2_CNT1SEED_CONFIGVALUE;
+        config_reg->CONFIG_CNT1CLKSRC = DCC2_CNT1CLKSRC_CONFIGVALUE;
+        config_reg->CONFIG_CNT0CLKSRC = DCC2_CNT0CLKSRC_CONFIGVALUE;
+    }
+    else
+    {
+	/*SAFETYMCUSW 134 S MR:12.2 <APPROVED> "LDRA Tool issue" */
+        config_reg->CONFIG_GCTRL = dccREG2->GCTRL;
+        config_reg->CONFIG_CNT0SEED = dccREG2->CNT0SEED;
+        config_reg->CONFIG_VALID0SEED = dccREG2->VALID0SEED;
+        config_reg->CONFIG_CNT1SEED = dccREG2->CNT1SEED;
+        config_reg->CONFIG_CNT1CLKSRC = dccREG2->CNT1CLKSRC;
+        config_reg->CONFIG_CNT0CLKSRC = dccREG2->CNT0CLKSRC;
+    }
+}
+
+
+
 

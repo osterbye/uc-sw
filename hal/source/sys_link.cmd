@@ -54,11 +54,11 @@ MEMORY
 {
     VECTORS (X)  : origin=0x00000000 length=0x00000020
     KERNEL  (RX) : origin=0x00000020 length=0x00008000 
-    FLASH0  (RX) : origin=0x00008020 length=0x00057FE0
+    FLASH0  (RX) : origin=0x00008020 length=0x00137FE0
     STACKS  (RW) : origin=0x08000000 length=0x00000800
     KRAM    (RW) : origin=0x08000800 length=0x00000800
-	RAM     (RW) : origin=(0x08000800+0x00000800) length=(0x00007800 - 0x00000800)
-	
+    RAM     (RW) : origin=(0x08000800+0x00000800) length=(0x0002F800 - 0x00000800)
+    
 /* USER CODE BEGIN (2) */
 /* USER CODE END */
 }
@@ -76,15 +76,15 @@ SECTIONS
     .kernelTEXT   : {} > KERNEL
     .cinit        : {} > KERNEL
     .pinit        : {} > KERNEL
-	/* Rest of code to user mode flash region */
-    .text         : {} > FLASH0
-    .const        : {} > FLASH0
-	/* FreeRTOS Kernel data in protected region of RAM */
+    /* Rest of code to user mode flash region */
+    .text         : {} > FLASH0 
+    .const        : {} > FLASH0 
+    /* FreeRTOS Kernel data in protected region of RAM */
     .kernelBSS    : {} > KRAM
     .kernelHEAP   : {} > RAM
     .bss          : {} > RAM
-    .data         : {} > RAM	
-	
+    .data         : {} > RAM    
+
 /* USER CODE BEGIN (4) */
 /* USER CODE END */
 }
@@ -99,4 +99,3 @@ SECTIONS
 /* USER CODE END */
 
 /*----------------------------------------------------------------------------*/
-

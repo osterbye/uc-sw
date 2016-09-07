@@ -1,7 +1,7 @@
 /**********************************************************************************************************************
  *  FILE DESCRIPTION
  *  -------------------------------------------------------------------------------------------------------------------
- *         File:  Device_TMS570LS04.h
+ *         File:  Device_TMS570LS12.h
  *      Project:  Tms570_TIFEEDriver
  *       Module:  TIFEEDriver
  *    Generator:  None
@@ -56,8 +56,8 @@
  * INCLUDES
  *********************************************************************************************************************/
 
-#ifndef DEVICE_TMS570LS04_H
-#define DEVICE_TMS570LS04_H
+#ifndef DEVICE_TMS570LS12x_H
+#define DEVICE_TMS570LS12x_H
 
 
 /** @def DEVICE_CONFIGURATION_VERSION
@@ -97,6 +97,7 @@
 */
 #define DEVICE_NUMBER_OF_READ_CYCLE_THRESHOLDS 4U   /* Defines the number of Read Cycle Thresholds */
 
+
 /* Include Files */
 #ifndef _PLATFORM_TYPES_H_
 #define _PLATFORM_TYPES_H_
@@ -105,6 +106,6 @@
 #include "hal_stdtypes.h"
 #include "Device_types.h"
 
-#endif /* DEVICE_TMS570LS04_H */
+#endif /* DEVICE_TMS570LS12x_H */
 
 /* End of File */

@@ -241,7 +241,7 @@ extern void vPortTaskUsesFPU(void);
 
 #define portMPU_REGION_ENABLE					( 0x01UL )
 
-#define portMPU_TOTAL_REGIONS				    ( 8UL )
+#define portMPU_TOTAL_REGIONS				    ( 12UL )
 
 /* MPU Sub Region region */
 #define portMPU_SUBREGION_0_DISABLE			    ( 0x1UL << 8UL )
