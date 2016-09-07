@@ -142,6 +142,8 @@ StackType_t *pxOriginalTOS;
 
 	pxOriginalTOS = pxTopOfStack;
 
+	/* Ensure the stack is correctly aligned on exit. */
+	pxTopOfStack--;
 
 	/* Setup the initial stack of the task.  The stack is set exactly as
 	expected by the portRESTORE_CONTEXT() macro. */
@@ -209,6 +211,12 @@ StackType_t *pxOriginalTOS;
 		/* The task will start in thumb mode. */
 		*pxTopOfStack |= portTHUMB_MODE_BIT;
 	}
+		pxTopOfStack--;
+
+		/* The last thing on the stack is the tasks ulUsingFPU value, which by
+		default is set to indicate that the stack frame does not include FPU
+		registers. */
+		*pxTopOfStack = pdFALSE;
 
 	return pxTopOfStack;
 }

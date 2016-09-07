@@ -59,8 +59,12 @@
 #include "spi.h"
 #include "het.h"
 #include "dcc.h"
+#include "i2c.h"
 #include "crc.h"
+#include "etpwm.h"
 #include "eqep.h"
+#include "ecap.h"
+#include "sys_dma.h"
 
 /* USER CODE BEGIN (0) */
 /* USER CODE END */
@@ -159,6 +163,16 @@ void gioNotification(gioPORT_t *port, uint32 bit)
 }
 
 /* USER CODE BEGIN (20) */
+/* USER CODE END */
+#pragma WEAK(i2cNotification)
+void i2cNotification(i2cBASE_t *i2c, uint32 flags)      
+{
+/*  enter user code between the USER CODE BEGIN and USER CODE END. */
+/* USER CODE BEGIN (21) */
+/* USER CODE END */
+}
+
+/* USER CODE BEGIN (22) */
 /* USER CODE END */
 #pragma WEAK(linNotification)
 void linNotification(linBASE_t *lin, uint32 flags)      
@@ -265,6 +279,23 @@ void crcNotification(crcBASE_t *crc, uint32 flags)
 /* USER CODE BEGIN (43) */
 /* USER CODE END */
 
+#pragma WEAK(etpwmNotification)
+void etpwmNotification(etpwmBASE_t *node)
+{
+/*  enter user code between the USER CODE BEGIN and USER CODE END. */
+/* USER CODE BEGIN (44) */
+/* USER CODE END */
+}
+#pragma WEAK(etpwmTripNotification)
+void etpwmTripNotification(etpwmBASE_t *node,uint16 flags)
+{
+/*  enter user code between the USER CODE BEGIN and USER CODE END. */
+/* USER CODE BEGIN (45) */
+/* USER CODE END */
+}
+
+/* USER CODE BEGIN (46) */
+/* USER CODE END */
 
 /* USER CODE BEGIN (47) */
 /* USER CODE END */
@@ -282,10 +313,28 @@ void eqepNotification(eqepBASE_t *eqep,uint16 flags)
 /* USER CODE BEGIN (50) */
 /* USER CODE END */
 
+#pragma WEAK(ecapNotification)
+void ecapNotification(ecapBASE_t *ecap,uint16 flags)
+{
+/*  enter user code between the USER CODE BEGIN and USER CODE END. */
+/* USER CODE BEGIN (51) */
+/* USER CODE END */
+}
+/* USER CODE BEGIN (52) */
+/* USER CODE END */
 
 /* USER CODE BEGIN (53) */
 /* USER CODE END */
 
+#pragma WEAK(dmaGroupANotification)
+void dmaGroupANotification(dmaInterrupt_t inttype, uint32 channel)
+{
+/*  enter user code between the USER CODE BEGIN and USER CODE END. */
+/* USER CODE BEGIN (54) */
+/* USER CODE END */
+}
+/* USER CODE BEGIN (55) */
+/* USER CODE END */
 
 /* USER CODE BEGIN (56) */
 /* USER CODE END */

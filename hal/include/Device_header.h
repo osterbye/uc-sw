@@ -60,7 +60,7 @@
 #define TI_FEE_DEVICEHEADER_H
  
 /* Uncomment the appropriate include file depending on the device you are using */
-#include "Device_TMS570LS04.h"
+#include "Device_TMS570LS12.h"
 
 /* End of file */
 #endif

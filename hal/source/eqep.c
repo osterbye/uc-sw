@@ -203,6 +203,139 @@ void QEPInit(void)
 /* USER CODE BEGIN (4) */
 /* USER CODE END */
 
+  /** - Clear Position Counter register   */
+  eqepREG2->QPOSCNT  =  0x00000000U;
+  
+  /** - Initialize Position Counter value register   */ 
+  eqepREG2->QPOSINIT =  0x00000000U;
+  
+  /** - Set Maximum position counter value   */ 
+  eqepREG2->QPOSMAX  =  0x00000000U;
+  
+  /** - Set the initial Position compare value   */ 
+  eqepREG2->QPOSCMP  =  0U;
+  
+  /** - Clear the time base   */ 
+  eqepREG2->QUTMR    =  0x00000000U;
+  
+  /** - Configure unit period register   */ 
+  eqepREG2->QUPRD    =  (uint32) 0U;
+  
+  /** - Clear Watchdog Timer register  */ 
+  eqepREG2->QWDTMR   = 	(uint16) 0x00000000U;
+  
+  /** - Configure Watchdog Period   */ 
+  eqepREG2->QWDPRD   =  (uint16) 0U;
+  
+/* USER CODE BEGIN (5) */
+/* USER CODE END */
+
+  /** - Setup Decoder Control Register
+  *     - Select Position counter Mode
+  *     - Enable / Disable Sync Output
+  *     - Select Sync Output Pin  
+  *     - Select external Clock rate ( resolution)
+  *     - Enable / Disable Swap Quadrature clock input
+  *     - Enable / Disable Gating of index pulse with Strobe.
+  *     - Enable / Disable Negate QEPA input
+  *     - Enable / Disable Negate QEPB input
+  *     - Enable / Disable Negate QEPI input
+  *     - Enable / Disable Negate QEPS input  
+  */
+  eqepREG2->QDECCTL  = (uint16)((uint16)((uint16)eQEP_DIRECTION_COUNT << 14U)
+                       | (uint16)((uint16)0U << 13U) 
+					   | (uint16)((uint16)eQEP_INDEX_PIN << 12U) 
+					   | (uint16)((uint16)eQEP_RESOLUTION_1x << 11U)
+					   | (uint16)((uint16)0U << 10U)
+					   | (uint16)((uint16)0U << 9U)
+					   | (uint16)((uint16)0U << 8U)
+					   | (uint16)((uint16)0U << 7U)					   
+					   | (uint16)((uint16)0U << 6U)					   
+					   | (uint16)((uint16)0U << 5U)
+					   | (uint16)0x0000U);
+
+  /** - Setup eQEP Control Register
+  *     - Select Position counter Reset Mode
+  *     - Enable & Select Strobe event initialization of position counter
+  *     - Enable & Select Index event initialization of position counter
+  *     - Enable / Disable Software Initialization of Position counter.
+  *     - Select Strobe event latch of position counter.
+  *     - Select Index event latch of position counter.
+  *     - Select EQEP capture Latch mode
+  */				   
+  eqepREG2->QEPCTL   = (uint16)((uint16)((uint16)eQEP_MAX_POSITION << 12U)
+                       | (uint16)((uint16)0U << 11U) 
+					   | (uint16)((uint16)eQEP_DIRECTON_DEPENDENT << 10U)
+                       | (uint16)((uint16)0U << 9U)
+					   | (uint16)((uint16)eQEP_RISING_EDGE << 8U)
+					   | (uint16)((uint16)0U << 7U)
+					   | (uint16)((uint16)eQEP_RISING_EDGE << 6U)
+					   | (uint16)((uint16)eQEP_LATCH_RISING_EDGE << 4U)
+					   | (uint16)((uint16)eQEP_ON_POSITION_COUNTER_READ << 2U)
+					   | (uint16)0x0000U);
+					   
+  /** - Setup eQEP Position Control Register
+  *     - Enable / Disable Position compare shadow.
+  *     - Select Position compare shadow load mode.
+  *     - Select Polarity of Sync output.
+  *     - Select Position compare sync output pulse width.
+  */			   
+  eqepREG2->QPOSCTL  = (uint16)((uint16)((uint16)0U << 15U)
+					   | (uint16)((uint16)eQEP_QPOSCNT_EQ_QPSCMP << 14U)
+					   | (uint16)((uint16)eQEP_ACTIVE_HIGH << 13U)
+					   | (uint16)((uint16)0U)					   
+					   | (uint16)0x0000U);
+
+  /** - Setup eQEP Capture Control Register
+  *     - Select capture timer clock prescaler.
+  *     - Select Unit position event prescaler.
+  */					   
+  eqepREG2->QCAPCTL  = (uint16)((uint16)((uint16)eQEP_PS_8 << 4U)
+					   | (uint16)((uint16)eQEP_PS_512)
+					   | (uint16)0x0000U);
+
+/* USER CODE BEGIN (6) */
+/* USER CODE END */
+
+  /** - Clear Interrupt Flag register  */					   
+  eqepREG2->QCLR     = (uint16) 0xFFFFU;
+
+  /** - Setup eQEP Interrupt Enable Register
+  *     Enable / Diable UTO Interrupt
+  *     Enable / Diable IEL Interrupt
+  *     Enable / Diable SEL Interrupt
+  *     Enable / Diable PCM Interrupt 
+  *     Enable / Diable PCR Interrupt
+  *     Enable / Diable PCO Interrupt
+  *     Enable / Diable PCU Interrupt
+  *     Enable / Diable WTO Interrupt 
+  *     Enable / Diable QDC Interrupt
+  *     Enable / Diable QPE Interrupt
+  *     Enable / Diable PCE Interrupt
+  */  
+  eqepREG2->QEINT    = (uint16)((uint16)((uint16)0U << 11U)
+					   | (uint16)((uint16)0U << 10U)
+					   | (uint16)((uint16)0U << 9U)
+					   | (uint16)((uint16)0U << 8U)
+					   | (uint16)((uint16)0U << 7U)
+					   | (uint16)((uint16)0U << 6U)
+					   | (uint16)((uint16)0U << 5U)
+					   | (uint16)((uint16)0U << 4U)
+					   | (uint16)((uint16)0U << 3U)
+					   | (uint16)((uint16)0U << 2U)
+					   | (uint16)((uint16)0U << 1U));
+
+  /** - Clear Capture Timer register  */
+  eqepREG2->QCTMR    = (uint16)0x0000U;	
+
+  /** - Clear the Capture Period regiter */  
+  eqepREG2->QCPRD    = (uint16)0x0000U;	
+  
+  /** - Clear Period Latch register */					   
+  eqepREG2->QCPRDLAT = (uint16)0x0000U;
+  
+/* USER CODE BEGIN (7) */
+/* USER CODE END */
   
 }
 
@@ -1140,6 +1273,56 @@ void eqep1GetConfigValue(eqep_config_reg_t *config_reg, config_value_type_t type
         config_reg->CONFIG_QEINT       	= eqepREG1->QEINT;
     }
 }
+
+/** @fn void eqep2GetConfigValue(eqep_config_reg_t *config_reg, config_value_type_t type)
+*   @brief Get the initial or current values of the configuration registers
+*
+*    @param[in] *config_reg: pointer to the struct to which the initial or current
+*                           value of the configuration registers need to be stored
+*    @param[in] type:     whether initial or current value of the configuration registers need to be stored
+*                        - InitialValue: initial value of the configuration registers will be stored
+*                                       in the struct pointed by config_reg
+*                        - CurrentValue: initial value of the configuration registers will be stored
+*                                       in the struct pointed by config_reg
+*
+*   This function will copy the initial or current value (depending on the parameter 'type')
+*   of the configuration registers to the struct pointed by config_reg
+*
+*/
+/* SourceId : EQEP_SourceId_062 */
+/* DesignId : EQEP_DesignId_062 */
+/* Requirements : HL_QEP_SR63 */
+void eqep2GetConfigValue(eqep_config_reg_t *config_reg, config_value_type_t type)
+{
+    if (type == InitialValue)
+    {
+        config_reg->CONFIG_QPOSINIT		= EQEP2_QPOSINIT_CONFIGVALUE;
+        config_reg->CONFIG_QPOSMAX		= EQEP2_QPOSMAX_CONFIGVALUE;
+        config_reg->CONFIG_QPOSCMP      = EQEP2_QPOSCMP_CONFIGVALUE;
+        config_reg->CONFIG_QUPRD      	= EQEP2_QUPRD_CONFIGVALUE;
+        config_reg->CONFIG_QWDPRD      	= EQEP2_QWDPRD_CONFIGVALUE;
+        config_reg->CONFIG_QDECCTL      = EQEP2_QDECCTL_CONFIGVALUE;
+        config_reg->CONFIG_QEPCTL      	= EQEP2_QEPCTL_CONFIGVALUE;
+        config_reg->CONFIG_QCAPCTL      = EQEP2_QCAPCTL_CONFIGVALUE;
+        config_reg->CONFIG_QPOSCTL      = EQEP2_QPOSCTL_CONFIGVALUE;
+        config_reg->CONFIG_QEINT       	= EQEP2_QEINT_CONFIGVALUE;
+    }
+    else
+    {
+    /*SAFETYMCUSW 134 S MR:12.2 <APPROVED> "LDRA Tool issue" */
+        config_reg->CONFIG_QPOSINIT		= eqepREG2->QPOSINIT;
+        config_reg->CONFIG_QPOSMAX		= eqepREG2->QPOSMAX;
+        config_reg->CONFIG_QPOSCMP      = eqepREG2->QPOSCMP;
+        config_reg->CONFIG_QUPRD      	= eqepREG2->QUPRD;
+        config_reg->CONFIG_QWDPRD      	= eqepREG2->QWDPRD;
+        config_reg->CONFIG_QDECCTL      = eqepREG2->QDECCTL;
+        config_reg->CONFIG_QEPCTL      	= eqepREG2->QEPCTL;
+        config_reg->CONFIG_QCAPCTL      = eqepREG2->QCAPCTL;
+        config_reg->CONFIG_QPOSCTL      = eqepREG2->QPOSCTL;
+        config_reg->CONFIG_QEINT       	= eqepREG2->QEINT;
+    }
+}
+
 
 
 /*end of file*/

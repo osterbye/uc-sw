@@ -43,7 +43,7 @@ void main(void){
 
 void vHeartbeat (void *pvParameters){
 	while(1){
-		gioToggleBit(gioPORTA, 2);
+		gioToggleBit(gioPORTB, 1);
 		vTaskDelay(500 / portTICK_PERIOD_MS);
 	}
 }

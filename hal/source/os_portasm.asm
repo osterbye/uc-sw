@@ -93,6 +93,23 @@ portSAVE_CONTEXT .macro
         MRS R0, SPSR
         STMDB   LR!, {R0}
 
+        ;Determine if the task maintains an FPU context.
+        LDR R0, ulFPUContextConst
+        LDR R0, [R0]
+
+        ; Test the flag
+        CMP     R0, #0
+
+        ; If the task is not using a floating point context then skip the
+        ; saving of the FPU registers.
+        BEQ     $+16
+
+        FSTMDBD LR!, {D0-D15}
+        FMRX    R1,  FPSCR
+        STMFD   LR!, {R1}
+
+        ; Save the flag
+        STMDB   LR!, {R0}
 
         ; Store the new top of stack for the task.
         LDR R0, pxCurrentTCBConst
@@ -133,6 +150,22 @@ portRESTORE_CONTEXT .macro
 
         LDR     LR, [R0]
 
+        ; The floating point context flag is the first thing on the stack.
+        LDR     R0, ulFPUContextConst
+        LDMFD   LR!, {R1}
+        STR     R1, [R0]
+
+        ; Test the flag
+        CMP     R1, #0
+
+        ; If the task is not using a floating point context then skip the
+        ; VFP register loads.
+        BEQ     $+16
+
+        ; Restore the floating point context.
+        LDMFD   LR!, {R0}
+        FLDMIAD LR!, {D0-D15}
+        FMXR    FPSCR, R0
 
         ; Get the SPSR from the stack.
         LDMFD   LR!, {R0}
@@ -151,7 +184,7 @@ portRESTORE_CONTEXT .macro
 
         .endm
 
-portMax_MPU_Region       .word   8 - 1
+portMax_MPU_Region       .word   12 - 1
 
 ;/*-----------------------------------------------------------*/
 ; Start the first task by restoring its context.
@@ -239,6 +272,15 @@ vPortPreemptiveTick
 ;-------------------------------------------------------------------------------
 
 
+        .def vPortInitialiseFPSCR
+
+vPortInitialiseFPSCR
+
+        MOV     R0, #0
+        FMXR    FPSCR, R0
+        BX      LR
+
+
 ;-------------------------------------------------------------------------------
 
         .def ulPortCountLeadingZeros
@@ -295,6 +337,11 @@ swiPortEnableInterrupts
 ; swiPortTaskUsesFPU
         .asmfunc
 swiPortTaskUsesFPU
+        ldr     r12, ulTaskHasFPUContextConst
+        mov     r11, #1
+        str     r11, [r12]
+        mov     r11, #0
+        fmxr    FPSCR, r11
         bx      r14
 
         .endasmfunc

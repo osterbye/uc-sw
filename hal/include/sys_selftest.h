@@ -10,7 +10,7 @@
 */
 
 /* 
-* Copyright (C) 2009-2016 Texas Instruments Incorporated - www.ti.com  
+* Copyright (C) 2009-2016 Texas Instruments Incorporated - www.ti.com 
 * 
 * 
 *  Redistribution and use in source and binary forms, with or without 
@@ -84,7 +84,14 @@
 #define CCMSR 			(*(volatile uint32 *)(0xFFFFF600U))
 #define CCMKEYR			(*(volatile uint32 *)(0xFFFFF604U))
 
+#define DMA_PARCR		(*(volatile uint32 *)(0xFFFFF1A8U))
+#define DMA_PARADDR		(*(volatile uint32 *)(0xFFFFF1ACU))
+#define DMARAMLOC		(*(volatile uint32 *)(0xFFF80000U))
+#define DMARAMPARLOC	(*(volatile uint32 *)(0xFFF80A00U))
+
 #define MIBSPI1RAMLOC	(*(volatile uint32 *)(0xFF0E0000U))
+#define MIBSPI3RAMLOC	(*(volatile uint32 *)(0xFF0C0000U))
+#define MIBSPI5RAMLOC	(*(volatile uint32 *)(0xFF0A0000U))
 
 
 #ifndef __PBIST_H__
@@ -102,7 +109,7 @@
 enum pbistPort
 {
     PBIST_PORT0 = 0U, /**< Alias for PBIST Port 0 */
-    PBIST_PORT1 = 1U  /**< Alias for PBIST Port 1 */
+    PBIST_PORT1 = 1U  /**< Alias for PBIST Port 1 < Check datasheet for Port 1 availability > */
 };
 /** @enum pbistAlgo
 *   @brief Alias names for pbist Algorithm
@@ -208,7 +215,7 @@ void pbistGetConfigValue(pbist_config_reg_t *config_reg, config_value_type_t typ
 /* STC General Definitions */
 
 /* STC Test Intervals supported in the Device */
-#define STC_INTERVAL 26U
+#define STC_INTERVAL 24U
 #define STC_MAX_TIMEOUT 0xFFFFFFFFU
 
 
@@ -419,17 +426,25 @@ void checkB1RAMECC(void);
 void checkFlashECC(void);
 
 void vimParityCheck(void);
+void dmaParityCheck(void);
 void adc1ParityCheck(void);
+void adc2ParityCheck(void);
 void het1ParityCheck(void);
 void htu1ParityCheck(void);
+void het2ParityCheck(void);
+void htu2ParityCheck(void);
 void can1ParityCheck(void);
 void can2ParityCheck(void);
+void can3ParityCheck(void);
 void mibspi1ParityCheck(void);
+void mibspi3ParityCheck(void);
+void mibspi5ParityCheck(void);
 
 void checkRAMECC(void);
 void checkClockMonitor(void);
 void checkFlashEEPROMECC(void);
 void checkPLL1Slip(void);
+void checkPLL2Slip(void);
 void checkRAMAddrParity(void);
 void checkRAMUERRTest(void);
 
