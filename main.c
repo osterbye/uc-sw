@@ -6,6 +6,9 @@
 
 /* Halcogen includes */
 #include "gio.h"
+#include "crc.h"
+#include "spi.h"
+#include "sys_dma.h"
 
 /* FreeRTOS includes */
 #include "FreeRTOS.h"
@@ -19,16 +22,20 @@
 /* other headers */
 #include "globalState.h"
 
+#define RX_BUFFER_SIZE 128
+
 void vHeartbeat (void *pvParameters);
 
 void main(void){
 
 	gioInit(); // General input output
+	dmaEnable();
+	spiInit();
 
 	//xTaskCreate( vTask1, "Task 1", 340, NULL, 2, NULL );
 
 	xTaskCreate( vHeartbeat, "HEARTBEAT", 400, NULL, 2, NULL );
-	xTaskCreate( vSendStatus, "SENDSTATUS", 400, NULL, 2, NULL );
+	xTaskCreate( vSpiGateway, "SPIGATEWAY", 400, NULL, 2 | portPRIVILEGE_BIT, NULL ); // privileged mode needed for dma
 
 	//vTaskStartTrace(&traceBuff[0], 255);
 

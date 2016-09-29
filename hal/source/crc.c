@@ -123,7 +123,7 @@ void crcInit(void)
     crcREG->REGH2=0x00000000U;
 
    /** - Setup the Channel mode */
-    crcREG->CTRL2 |= (uint32)(CRC_FULL_CPU)  | (uint32)((uint32)CRC_FULL_CPU << 8U);
+    crcREG->CTRL2 |= (uint32)(CRC_SEMI_CPU)  | (uint32)((uint32)CRC_FULL_CPU << 8U);
 
 /* USER CODE BEGIN (3) */
 /* USER CODE END */

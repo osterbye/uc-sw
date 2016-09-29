@@ -305,7 +305,7 @@ extern "C" {
 #endif
 
 #ifndef configQUEUE_REGISTRY_SIZE
-	#define configQUEUE_REGISTRY_SIZE 0U
+	#define configQUEUE_REGISTRY_SIZE 10U
 #endif
 
 #if ( configQUEUE_REGISTRY_SIZE < 1 )
