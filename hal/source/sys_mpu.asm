@@ -185,12 +185,6 @@ _mpuInit_
         mrc   p15, #0, r0,      c1, c0, #0
         orr   r0,  r0, #0x20000
         mcr   p15, #0, r0,      c1, c0, #0
-        ; Enable mpu
-        mrc   p15, #0, r0, c1, c0, #0
-        orr   r0,  r0, #1
-        dsb
-        mcr   p15, #0, r0, c1, c0, #0
-        isb
         bx    lr
 
 r1Base  .word 0x00000000

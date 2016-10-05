@@ -445,5 +445,121 @@ void dmaGetConfigValue(dma_config_reg_t *config_reg, config_value_type_t type)
 
 
 
+/** @fn void dmaFTCAInterrupt(void)
+*   @brief DMA Interrupt Handler
+*
+*   Frame transfer complete Interrupt handler for DMA channel routed to Group A
+*
+*/
+#pragma CODE_STATE(dmaFTCAInterrupt, 32)
+#pragma INTERRUPT(dmaFTCAInterrupt, IRQ)
+
+/* SourceId : DMA_SourceId_016 */
+/* DesignId : DMA_DesignId_016 */
+/* Requirements: HL_SR181, HL_SR182 */
+void dmaFTCAInterrupt(void)
+{
+    uint32 offset = dmaREG->FTCAOFFSET;
+
+/* USER CODE BEGIN (0) */
+/* USER CODE END */
+
+    if (offset != 0U)
+    {
+        dmaGroupANotification(FTC, offset - 1U);
+    }
+
+/* USER CODE BEGIN (1) */
+/* USER CODE END */
+
+}
 
 
+/** @fn void dmaLFSAInterrupt(void)
+*   @brief DMA Interrupt Handler
+*
+*   Frame transfer complete Interrupt handler for DMA channel routed to Group A
+*
+*/
+#pragma CODE_STATE(dmaLFSAInterrupt, 32)
+#pragma INTERRUPT(dmaLFSAInterrupt, IRQ)
+
+/* SourceId : DMA_SourceId_017 */
+/* DesignId : DMA_DesignId_016 */
+/* Requirements: HL_SR181, HL_SR182 */
+void dmaLFSAInterrupt(void)
+{
+    uint32 offset = dmaREG->LFSAOFFSET;
+
+/* USER CODE BEGIN (2) */
+/* USER CODE END */
+
+    if (offset != 0U)
+    {
+        dmaGroupANotification(LFS, offset - 1U);
+    }
+
+/* USER CODE BEGIN (3) */
+/* USER CODE END */
+
+}
+
+
+/** @fn void dmaHBCAInterrupt(void)
+*   @brief DMA Interrupt Handler
+*
+*   Frame transfer complete Interrupt handler for DMA channel routed to Group A
+*
+*/
+#pragma CODE_STATE(dmaHBCAInterrupt, 32)
+#pragma INTERRUPT(dmaHBCAInterrupt, IRQ)
+
+/* SourceId : DMA_SourceId_018 */
+/* DesignId : DMA_DesignId_016 */
+/* Requirements: HL_SR181, HL_SR182 */
+void dmaHBCAInterrupt(void)
+{
+    uint32 offset = dmaREG->HBCAOFFSET;
+
+/* USER CODE BEGIN (4) */
+/* USER CODE END */
+
+    if (offset != 0U)
+    {
+        dmaGroupANotification(HBC, offset - 1U);
+    }
+
+/* USER CODE BEGIN (5) */
+/* USER CODE END */
+
+}
+
+
+/** @fn void dmaBTCAInterrupt(void)
+*   @brief DMA Interrupt Handler
+*
+*   Frame transfer complete Interrupt handler for DMA channel routed to Group A
+*
+*/
+#pragma CODE_STATE(dmaBTCAInterrupt, 32)
+#pragma INTERRUPT(dmaBTCAInterrupt, IRQ)
+
+/* SourceId : DMA_SourceId_019 */
+/* DesignId : DMA_DesignId_016 */
+/* Requirements: HL_SR181, HL_SR182 */
+void dmaBTCAInterrupt(void)
+{
+    uint32 offset = dmaREG->BTCAOFFSET;
+
+/* USER CODE BEGIN (6) */
+/* USER CODE END */
+
+    if (offset != 0U)
+    {
+        dmaGroupANotification(BTC, offset - 1U);
+    }
+
+/* USER CODE BEGIN (7) */
+/* USER CODE END */
+
+}
