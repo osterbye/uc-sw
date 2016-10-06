@@ -10,6 +10,7 @@
 /* FreeRTOS includes */
 #include "FreeRTOS.h"
 
+#include "sys_core.h"
 #include "os_task.h"
 #include "os_queue.h"
 #include "os_semphr.h"
@@ -18,17 +19,24 @@
 
 /* other headers */
 #include "globalState.h"
+#include "canbus.h"
+#include "logging.h"
 
 void vHeartbeat (void *pvParameters);
 
 void main(void){
-
+	_enable_interrupt_();
 	gioInit(); // General input output
+	loggingInit();
+	canbusInit();
 
 	//xTaskCreate( vTask1, "Task 1", 340, NULL, 2, NULL );
-
-	xTaskCreate( vHeartbeat, "HEARTBEAT", 400, NULL, 2, NULL );
+	LOG_INFO("Starting HEARTBEAT task\n");
+	xTaskCreate( vHeartbeat,  "HEARTBEAT", 400, NULL, 2, NULL );
+	LOG_INFO("Starting SENDSTATUS task\n");
 	xTaskCreate( vSendStatus, "SENDSTATUS", 400, NULL, 2, NULL );
+	LOG_INFO("Starting CANBUS task\n");
+	xTaskCreate(canbusTask,   "CANBUS",    400, NULL, 2 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
 
 	//vTaskStartTrace(&traceBuff[0], 255);
 
