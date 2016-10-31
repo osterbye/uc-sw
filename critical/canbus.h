@@ -1,6 +1,12 @@
 #ifndef CANBUS_H
 #define CANBUS_H
 
+#define CANBUS_USE_INTERFACE_CAN1   1
+#define CANBUS_USE_INTERFACE_CAN2   1
+#define CANBUS_USE_INTERFACE_CAN3   1
+
+#define CANBUS_ENABLE_LOOPBACK      1 /* only for testing */
+
 enum canInterfaces {
     CANBUS1 = 1,
     CANBUS2 = 2,
