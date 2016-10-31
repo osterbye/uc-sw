@@ -61,7 +61,7 @@
 */
 
 /* USER CODE BEGIN (2) */
-#if 0
+#ifdef NOMAIN
 /* USER CODE END */
 
 void main(void)

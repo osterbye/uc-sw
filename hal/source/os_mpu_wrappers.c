@@ -605,8 +605,7 @@ BaseType_t MPU_xQueuePeekFromISR( QueueHandle_t xQueue,  void * const pvBuffer )
 	{
 		BaseType_t xRunningPrivileged = prvRaisePrivilege();
 
-		//xReturn = vQueueUnregisterQueue( xQueue );
-		vQueueUnregisterQueue( xQueue );
+		xReturn = vQueueUnregisterQueue( xQueue );
 		portRESET_PRIVILEGE( xRunningPrivileged );
 	}
 #endif

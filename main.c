@@ -21,6 +21,7 @@
 
 /* other headers */
 #include "globalState.h"
+#include "logging.h"
 
 #define RX_BUFFER_SIZE 128
 
@@ -28,29 +29,35 @@ void vHeartbeat (void *pvParameters);
 
 void main(void){
 
-	gioInit(); // General input output
-	dmaEnable();
-	spiInit();
+  loggingInit();
+  gioInit(); // General input output
+  dmaEnable();
+  spiInit();
+  // Enable SPI3 DMAreqs
+  spiREG3->INT0 = (spiREG3->INT0 & 0xFFFEFFFFU) | (uint32)((uint32)1U << 16U);  /* ENABLE DMAREQ */
+  
+  //xTaskCreate( vTask1, "Task 1", 340, NULL, 2, NULL );
+  LOG_INFO("Creating tasks \n\r");
+  xTaskCreate( vHeartbeat, "HEARTBEAT", 400, NULL, 2, NULL );
+  xTaskCreate( vSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL ); // privileged mode needed for dma
+  xTaskCreate( vSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL ); // privileged mode needed for dma
 
-	//xTaskCreate( vTask1, "Task 1", 340, NULL, 2, NULL );
+  //vTaskStartTrace(&traceBuff[0], 255);
 
-	xTaskCreate( vHeartbeat, "HEARTBEAT", 400, NULL, 2, NULL );
-	xTaskCreate( vSpiGateway, "SPIGATEWAY", 400, NULL, 2 | portPRIVILEGE_BIT, NULL ); // privileged mode needed for dma
+  /* Start the scheduler so our tasks start executing. */
+  LOG_INFO("Starting scheduler\n\r");
+  vTaskStartScheduler();
 
-	//vTaskStartTrace(&traceBuff[0], 255);
-
-	/* Start the scheduler so our tasks start executing. */
-	vTaskStartScheduler();
-
-	/* If all is well we will never reach here as the scheduler will now be
-	running.  If we do reach here then it is likely that there was insufficient
-	heap available for the idle task to be created. */
-	while (1);
+  /* If all is well we will never reach here as the scheduler will now be
+     running.  If we do reach here then it is likely that there was insufficient
+     heap available for the idle task to be created. */
+  while (1);
 }
 
+
 void vHeartbeat (void *pvParameters){
-	while(1){
-		gioToggleBit(gioPORTB, 1);
-		vTaskDelay(500 / portTICK_PERIOD_MS);
-	}
+  while(1){
+	  gioToggleBit(gioPORTB, 1);
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+  }
 }
