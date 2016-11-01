@@ -22,13 +22,13 @@
 /* other headers */
 #include "globalState.h"
 #include "logging.h"
+#include "doorlock.h"
 
 #define RX_BUFFER_SIZE 128
 
 void vHeartbeat (void *pvParameters);
 
 void main(void){
-
   loggingInit();
   gioInit(); // General input output
   dmaEnable();
@@ -41,7 +41,7 @@ void main(void){
   xTaskCreate( vHeartbeat, "HEARTBEAT", 400, NULL, 2, NULL );
   xTaskCreate( vSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL ); // privileged mode needed for dma
   xTaskCreate( vSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL ); // privileged mode needed for dma
-
+  xTaskCreate( vDoorlock,  "DOORLOCK", 100, NULL, 2, NULL );
   //vTaskStartTrace(&traceBuff[0], 255);
 
   /* Start the scheduler so our tasks start executing. */
@@ -53,7 +53,6 @@ void main(void){
      heap available for the idle task to be created. */
   while (1);
 }
-
 
 void vHeartbeat (void *pvParameters){
   while(1){
