@@ -23,7 +23,7 @@
 /* nanopb */
 #include "nanopb/pb_decode.h"
 #include "nanopb/pb_encode.h"
-#include "nanopb/CCU_internal.pb.h"
+#include "MessageDefinitions.pb.h"
 
 /* project includes */
 #include "globalState.h"
@@ -278,9 +278,49 @@ inline void ParseSpiRxByte(uint8_t data){
   }
 }
 
+#include "doorlock.h"
+// TODO: move command execution mechanism to separate source unit
+ExecuteCommand(const CommandRequest * request) {
+	if (!request->has_type) {
+		LOG_WARN("Could not execute command with missing type");
+	}
+	if (CommandRequest_TYPE_SETDOORLOCK == request->type) {
+		if (CommandRequest_setDoorLock_tag == request->which_argument &&
+				request->argument.setDoorLock.has_locked ) {
+			bool lockedSetTo = request->argument.setDoorLock.locked;
+			doorlockRequestState(lockedSetTo);
+			// TODO: generate and send command response
+		} else {
+			LOG_WARN("Malformed door unlock request - no argument");
+		}
+	}
+}
+
 /* Stream to protobuff decoding */
 TranslateToProtobuf(uint8_t * message, uint16_t length){
+  bool status;
   pb_istream_t stream = pb_istream_from_buffer(message, length);
+  ContainerMessage container;
+  status = pb_decode(&stream, ContainerMessage_fields, &container);
+  if (!status) {
+	  // TODO: handle decode error
+  }
+
+  switch (container.which_message) {
+  case ContainerMessage_commandRequest_tag:
+	  ExecuteCommand(&container.message.commandRequest);
+	  break;
+  case ContainerMessage_commandResponse_tag:
+	  LOG_WARN("Command response handling not implemented");
+	  break;
+  case ContainerMessage_status_tag:
+	  LOG_WARN("CM shouldn't send status and command response messages");
+	  break;
+  default:
+	  LOG_WARN("Received unknown message type");
+	  break;
+  }
+
 }
 
 
