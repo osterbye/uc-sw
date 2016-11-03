@@ -37,7 +37,7 @@ void main(void){
   spiREG3->INT0 = (spiREG3->INT0 & 0xFFFEFFFFU) | (uint32)((uint32)1U << 16U);  /* ENABLE DMAREQ */
   
   //xTaskCreate( vTask1, "Task 1", 340, NULL, 2, NULL );
-  LOG_INFO("Creating tasks \n\r");
+  LOG_INFO("Creating tasks");
   xTaskCreate( vHeartbeat, "HEARTBEAT", 400, NULL, 2, NULL );
   xTaskCreate( vSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL ); // privileged mode needed for dma
   xTaskCreate( vSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL ); // privileged mode needed for dma
@@ -45,7 +45,7 @@ void main(void){
   //vTaskStartTrace(&traceBuff[0], 255);
 
   /* Start the scheduler so our tasks start executing. */
-  LOG_INFO("Starting scheduler\n\r");
+  LOG_INFO("Starting scheduler");
   vTaskStartScheduler();
 
   /* If all is well we will never reach here as the scheduler will now be

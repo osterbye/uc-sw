@@ -2,6 +2,7 @@
 #include "FreeRTOS.h"
 #include "os_task.h"
 #include "gio.h"
+#include "logging.h"
 
 enum doorRequest {
 	DOOR_NOREQUEST = -1,
@@ -12,6 +13,10 @@ enum doorRequest {
 static enum doorRequest requestedDoorState = DOOR_NOREQUEST;
 
 void doorlockRequestState(bool locked) {
+	if (locked)
+		LOG_INFO("Locking door");
+	else
+		LOG_INFO("Unlocking door");
 	requestedDoorState = locked ? DOOR_LOCK : DOOR_UNLOCK;
 }
 

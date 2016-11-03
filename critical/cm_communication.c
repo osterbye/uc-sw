@@ -137,7 +137,7 @@ void vSpiTx(void *pvParameters){
         //length += 8;
         /*send the message*/
         length+=8;
-        LOG_DEBUG("Starting transmission");
+        LOG_INFO("Starting transmission");
         gioSetBit(gioPORTB,1,1); // set request to transmitt to active
         SetupDMASpiMsgTx(length, txBuffer);
       }
@@ -180,7 +180,7 @@ void vSpiRx(void *pvParameters){
       for(i = 0; i < spiRxFrameAvail; i++){
         ParseSpiRxByte(spiRxBuffer[spiRxBufferPosition]);
         xSemaphoreTake(xSpiRxFrameCnt,0);
-        LOG_DEBUG("Received SPI byte: %02X ", spiRxBuffer[spiRxBufferPosition]);
+        LOG_DEBUG("Received SPI byte: %02X\r\n", spiRxBuffer[spiRxBufferPosition]);
         /*update buffer end position*/
         spiRxBufferPosition++;
         if(spiRxBufferPosition >= SPIRXBUFFERSIZE){

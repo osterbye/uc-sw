@@ -13,7 +13,7 @@ void loggingInit() {
     sciInit();
     uint8 character = 0x0A;
     sciSend(scilinREG, 1, &character);
-    LOG_INFO("--------------------------\n\r");
-    LOG_INFO("Logging module initialized\n\r");
+    LOG_INFO("--------------------------");
+    LOG_INFO("Logging module initialized");
 }
 
