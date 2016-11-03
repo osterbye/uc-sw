@@ -72,7 +72,7 @@ void vSpiTx(void *pvParameters){
   uint8_t txBuffer[SPITXBUFFERSIZE] = {0};
   uint8_t i = 0;
 
-  LOG_INFO("Entering SPI TX task \n\r");
+  LOG_INFO("Entering SPI TX task ");
 
   /* Semaphore to signal end of transmission */
   xSpiTxAvailable = xSemaphoreCreateBinary();
@@ -82,8 +82,6 @@ void vSpiTx(void *pvParameters){
   InitDMASpiTx();
   uint8_t txMessageAvailable = TRUE;
 
-
-
   while(1){
 
     if(pdTRUE == xSemaphoreTake(xSpiTxAvailable,portMAX_DELAY)){ /*Transmission finished?*/
@@ -91,7 +89,7 @@ void vSpiTx(void *pvParameters){
       uint16_t length = 0x2244;
       uint8_t * FastMessage = 0;
 
-      uint8_t type = 0;
+      uint8_t type = 1;
 
       FastMessage = GetFromSPITxFast();
       if(NULL != FastMessage){ 
@@ -117,7 +115,7 @@ void vSpiTx(void *pvParameters){
 
         txBuffer[0]=0xAA; /*preambule*/
         txBuffer[1]=0x55; /*preambule*/
-        txBuffer[2]=type; /*TODO check this in the documentation !!*/
+        txBuffer[2]=type;
         txBuffer[3]=0x11;
         txBuffer[4]=0x11;
         txBuffer[5]=0x11;
@@ -139,7 +137,7 @@ void vSpiTx(void *pvParameters){
         //length += 8;
         /*send the message*/
         length+=8;
-        LOG_DEBUG("Starting transmission\n\r");
+        LOG_DEBUG("Starting transmission");
         gioSetBit(gioPORTB,1,1); // set request to transmitt to active
         SetupDMASpiMsgTx(length, txBuffer);
       }
@@ -155,25 +153,24 @@ void vSpiRx(void *pvParameters){
   UBaseType_t spiRxFrameAvail = 0;
   UBaseType_t spiRxBufferPosition = 0;
 
-  LOG_INFO("Entering SPI RX task \n\r");
+  LOG_INFO("Entering SPI RX task ");
 
   xSpiRxFrameCnt = xSemaphoreCreateCounting( SPIRXBUFFERSIZE , 0 );
   vQueueAddToRegistry( xSpiRxFrameCnt, "SPI RX byte count" );
 
   InitDMASpiRx();
 
-  uint8_t testMsg[100]={0xFF,0x11,0xAA,
-                        0xAA,0x55, 0x77 /*type*/,0x11,0x22,0x33,0x00,0x10/*16bytes payload length*/,
-                        0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,
-                        0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x1F,
-                        0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x1F, /*CRC*/
-                        };
-
-  for(i = 0; i < 35; i++){
-    ParseSpiRxByte(testMsg[i]);
-  }
-
-  //while(1);
+//  uint8_t testMsg[100]={0xFF,0x11,0xAA,
+//                        0xAA,0x55, 0x77 /*type*/,0x11,0x22,0x33,0x00,0x10/*16bytes payload length*/,
+//                        0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,
+//                        0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x1F,
+//                        0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x1F, /*CRC*/
+//                        };
+//
+//  for(i = 0; i < 35; i++){
+//    ParseSpiRxByte(testMsg[i]);
+//  }
+//  while(1);
 
   while(1){
     /* number of available frames/bytes */
@@ -183,7 +180,7 @@ void vSpiRx(void *pvParameters){
       for(i = 0; i < spiRxFrameAvail; i++){
         ParseSpiRxByte(spiRxBuffer[spiRxBufferPosition]);
         xSemaphoreTake(xSpiRxFrameCnt,0);
-        LOG_DEBUG("Received SPI byte: %02X \n\r", spiRxBuffer[spiRxBufferPosition]);
+        LOG_DEBUG("Received SPI byte: %02X ", spiRxBuffer[spiRxBufferPosition]);
         /*update buffer end position*/
         spiRxBufferPosition++;
         if(spiRxBufferPosition >= SPIRXBUFFERSIZE){
@@ -266,7 +263,7 @@ inline void ParseSpiRxByte(uint8_t data){
       // if it is:
       // send to protobuff handler ---> later have a by type dispatcher
       // TranslateToProtobuf(uint8_t * message, uint16_t length???);
-      // TranslateToProtobuf(&message[8], length);
+      TranslateToProtobuf(&message[8], length);
       state = SPIRX_WAITINGFORPREAMBULE1BYTE;
     } else {
       crc |= (uint64_t) data << ((8 - miscCnt)*8); /*check big/little endian*/
@@ -303,11 +300,14 @@ TranslateToProtobuf(uint8_t * message, uint16_t length){
   ContainerMessage container;
   status = pb_decode(&stream, ContainerMessage_fields, &container);
   if (!status) {
+    LOG_WARN("PB Decode error, message unparsable");
+    return;
 	  // TODO: handle decode error
   }
 
   switch (container.which_message) {
   case ContainerMessage_commandRequest_tag:
+    LOG_INFO("Executing command request");
 	  ExecuteCommand(&container.message.commandRequest);
 	  break;
   case ContainerMessage_commandResponse_tag:
@@ -317,7 +317,7 @@ TranslateToProtobuf(uint8_t * message, uint16_t length){
 	  LOG_WARN("CM shouldn't send status and command response messages");
 	  break;
   default:
-	  LOG_WARN("Received unknown message type");
+	  LOG_WARN("Received unknown message type %d", container.which_message);
 	  break;
   }
 
