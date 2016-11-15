@@ -29,6 +29,9 @@
 
 void vHeartbeat (void *pvParameters);
 																									\
+void vApplicationMallocFailedHook( void ) {
+	LOG_CRITICAL("Application malloc failed, bigger heap needed?");
+}
 
 void task_create(TaskFunction_t pxTaskCode, const char * const pcName, const uint16_t usStackDepth,
 		void * const pvParameters, UBaseType_t uxPriority, TaskHandle_t * const pxCreatedTask) {
