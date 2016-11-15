@@ -7,7 +7,7 @@
     <tools>ti</tools>
   </DEVICE>
   <VERSION>
-    <version>04.05.02</version>
+    <version>04.06.00</version>
   </VERSION>
   <HET1>
     <FILENAME>
@@ -303,7 +303,8 @@
         <NAME>mibspi.h</NAME>
       </HDRMIBSPI>
       <SRCMIBSPI>
-        </SRCMIBSPI>
+        <NAME>mibspi.c</NAME>
+      </SRCMIBSPI>
       <HDRSPI_R>
         <NAME>reg_spi.h</NAME>
       </HDRSPI_R>
@@ -448,38 +449,22 @@
       <HDR8FEE>
         <NAME>fee_interface.h</NAME>
       </HDR8FEE>
-      <SRC1FEE>
-</SRC1FEE>
-      <SRC2FEE>
-</SRC2FEE>
-      <SRC3FEE>
-</SRC3FEE>
-      <SRC4FEE>
-</SRC4FEE>
-      <SRC5FEE>
-</SRC5FEE>
-      <SRC6FEE>
-</SRC6FEE>
-      <SRC7FEE>
-</SRC7FEE>
-      <SRC8FEE>
-</SRC8FEE>
-      <SRC9FEE>
-</SRC9FEE>
-      <SRC10FEE>
-</SRC10FEE>
-      <SRC11FEE>
-</SRC11FEE>
-      <SRC12FEE>
-</SRC12FEE>
-      <SRC13FEE>
-</SRC13FEE>
-      <SRC14FEE>
-</SRC14FEE>
-      <SRC15FEE>
-</SRC15FEE>
-      <SRC16FEE>
-</SRC16FEE>
+      <SRC1FEE/>
+      <SRC2FEE/>
+      <SRC3FEE/>
+      <SRC4FEE/>
+      <SRC5FEE/>
+      <SRC6FEE/>
+      <SRC7FEE/>
+      <SRC8FEE/>
+      <SRC9FEE/>
+      <SRC10FEE/>
+      <SRC11FEE/>
+      <SRC12FEE/>
+      <SRC13FEE/>
+      <SRC14FEE/>
+      <SRC15FEE/>
+      <SRC16FEE/>
     </FILENAMES>
   </SYSTEM>
   <OS>
@@ -632,7 +617,7 @@
         <PATH>include\mibspi.h</PATH>
       </HDRMIBSPI>
       <SRCMIBSPI>
-        <PATH></PATH>
+        <PATH>source\mibspi.c</PATH>
       </SRCMIBSPI>
     </FILENAMES>
   </MIBSPI>
@@ -815,52 +800,52 @@
         <PATH>include\fee_interface.h</PATH>
       </HDR8FEE>
       <SRC1FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC1FEE>
       <SRC2FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC2FEE>
       <SRC3FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC3FEE>
       <SRC4FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC4FEE>
       <SRC5FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC5FEE>
       <SRC6FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC6FEE>
       <SRC7FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC7FEE>
       <SRC8FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC8FEE>
       <SRC9FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC9FEE>
       <SRC10FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC10FEE>
       <SRC11FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC11FEE>
       <SRC12FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC12FEE>
       <SRC13FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC13FEE>
       <SRC14FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC14FEE>
       <SRC15FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC15FEE>
       <SRC16FEE>
-        <PATH></PATH>
+        <PATH/>
       </SRC16FEE>
     </FILENAMES>
   </FEE>

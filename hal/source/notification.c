@@ -65,12 +65,6 @@
 #include "sys_dma.h"
 
 /* USER CODE BEGIN (0) */
-#include "FreeRTOS.h"
-#include "os_queue.h"
-#include "os_semphr.h"
-
-#include "cm_communication.h"
-
 /* USER CODE END */
 #pragma WEAK(esmGroup1Notification)
 void esmGroup1Notification(uint32 channel)
@@ -306,23 +300,6 @@ void dmaGroupANotification(dmaInterrupt_t inttype, uint32 channel)
 {
 /*  enter user code between the USER CODE BEGIN and USER CODE END. */
 /* USER CODE BEGIN (54) */
-	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
-	switch (channel){
-	case DMA_CH0: // SPI RX DMA channel
-		if(FTC == inttype){ /* Frame transfer complete interrupt*/
-			xSemaphoreGiveFromISR(xSpiRxFrameCnt,&xHigherPriorityTaskWoken); // XXX todo check waking up of the task
-		}
-		break;
-	case DMA_CH1: // SPI TX DMA channel
-		if(BTC == inttype){
-			gioSetBit(gioPORTB,1,0); // set request to transmitt to active
-			xSemaphoreGiveFromISR(xSpiTxAvailable,&xHigherPriorityTaskWoken); // XXX todo check waking up of the task
-		}
-		break;
-	default:
-		break;
-	}
 /* USER CODE END */
 }
 /* USER CODE BEGIN (55) */
