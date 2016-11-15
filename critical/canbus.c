@@ -9,11 +9,8 @@
 #include "canbus.h"
 #include "logging.h"
 
-#define CAN_RX_DMA_CHANNEL DMA_CH15
-
-uint8_t tx_data[16] = {0,1,2,3,4,5,6,7,8,9}; // "abcdefgh";
-
 #define canRECEIVE_BUFFER_SIZE 20
+
 CanMessage_t xReceiveBuffer[canRECEIVE_BUFFER_SIZE]; /* used as circular buffer */
 static uint16_t uWriteIndex = 0;
 static uint16_t uReadIndex  = 0;
@@ -54,7 +51,7 @@ static void setupCanInterface(enum canInterfaces interface, const CanMessage_t *
     }
 
 #if (CANBUS_ENABLE_LOOPBACK == 1)
-    canEnableloopback(canBase, Internal_Silent_Lbk);
+    canEnableloopback(canBase, External_Lbk);
 #endif
     /* Update Enable for message for first 63 message objects (mailboxes) for receiving */
     /* If CAN IDs need to be ignored, they should be put to first mailboxes and their flags
@@ -106,7 +103,7 @@ void canbusInit() {
     dmaEnable();
 }
 
-void dmaGroupANotification(dmaInterrupt_t inttype, uint32 channel) {
+void canbusDmaNotification(dmaInterrupt_t inttype, uint32 channel) {
     /* DMA actually copies arbitration register, so here ID is extracted from it */
     xReceiveBuffer[uWriteIndex].id = extractID(xReceiveBuffer[uWriteIndex].id);
     /* if recieved message was written over unread message, set global flag */
@@ -203,6 +200,8 @@ static void handleReceivedMessages() {
         uReadIndex = (uReadIndex + 1) % canRECEIVE_BUFFER_SIZE;
     }
 }
+
+uint8_t tx_data[16] = {0,1,2,3,4,5,6,7,8,9}; // "abcdefgh";
 
 void canbusTask(void *pvParameters) {
     uint16_t counter = 0x660;

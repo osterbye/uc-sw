@@ -1,6 +1,8 @@
 #ifndef CANBUS_H
 #define CANBUS_H
 
+#include <stdint.h>
+
 #define CANBUS_USE_INTERFACE_CAN1   1
 #define CANBUS_USE_INTERFACE_CAN2   1
 #define CANBUS_USE_INTERFACE_CAN3   1
@@ -27,6 +29,7 @@ typedef struct {
 } CanMessage_t;
 
 void canbusInit();
+void canbusDmaNotification(dmaInterrupt_t inttype, uint32 channel);
 void canbusTask(void *pvParameters);
 
 #endif /* CANBUS_H */
