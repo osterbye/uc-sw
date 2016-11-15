@@ -13,7 +13,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="out" artifactName="${ProjName}" buildProperties="" cleanCommand="${CG_CLEAN_CMD}" description="" id="com.ti.ccstudio.buildDefinitions.TMS470.Debug.181176560" name="Debug" parent="com.ti.ccstudio.buildDefinitions.TMS470.Debug" prebuildStep="protoc --plugin=protoc-gen-nanopb=../tools/nanopb/generator/protoc-gen-nanopb  --nanopb_out=. ./intercomm/MessageDefinitions.proto;">
+				<configuration artifactExtension="out" artifactName="${ProjName}" buildProperties="" cleanCommand="${CG_CLEAN_CMD}" description="" id="com.ti.ccstudio.buildDefinitions.TMS470.Debug.181176560" name="Debug" parent="com.ti.ccstudio.buildDefinitions.TMS470.Debug" prebuildStep="">
 					<folderInfo id="com.ti.ccstudio.buildDefinitions.TMS470.Debug.181176560." name="/" resourcePath="">
 						<toolChain id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.DebugToolchain.645510989" name="TI Build Tools" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.DebugToolchain" targetTool="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.linkerDebug.421917076">
 							<option id="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS.437730265" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS" valueType="stringList">

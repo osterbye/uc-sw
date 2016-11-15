@@ -20,8 +20,6 @@
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROJECT.Texas Instruments XDS100v2 USB Debug Probe/CortexR4" value="spiri_uc"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROJECT.Texas Instruments XDS110 USB Debug Probe/CortexR4" value="spiri_uc"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_TARGET_CONFIG" value="${target_config_active_default:spiri_uc}"/>
-<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.Texas Instruments XDS100v2 USB Debug Probe/CortexR4" value="/home/lovro/eevo/code/uc_sw/Debug/spiri_uc.out"/>
-<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.Texas Instruments XDS110 USB Debug Probe/CortexR4" value="/home/lovro/spiri/code/uc_sw/Debug/spiri_uc.out"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/spiri_uc"/>
 </listAttribute>
