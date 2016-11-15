@@ -28,6 +28,17 @@
 #include "doorlock.h"
 
 void vHeartbeat (void *pvParameters);
+																									\
+
+void task_create(TaskFunction_t pxTaskCode, const char * const pcName, const uint16_t usStackDepth,
+		void * const pvParameters, UBaseType_t uxPriority, TaskHandle_t * const pxCreatedTask) {
+
+    BaseType_t retval = xTaskCreate(pxTaskCode, pcName, usStackDepth, pvParameters, uxPriority, pxCreatedTask);
+    if (retval != pdPASS) {
+        LOG_CRITICAL("Task %s could not be created, error %d", pcName, retval);
+    }
+}
+
 
 void main(void){
   loggingInit();
@@ -38,14 +49,13 @@ void main(void){
   // Enable SPI3 DMAreqs
   spiREG3->INT0 = (spiREG3->INT0 & 0xFFFEFFFFU) | (uint32)((uint32)1U << 16U);  /* ENABLE DMAREQ */
   
-  //xTaskCreate( vTask1, "Task 1", 340, NULL, 2, NULL );
   LOG_INFO("Creating tasks");
-  xTaskCreate( vHeartbeat, "HEARTBEAT", 400, NULL, 2, NULL );
-  xTaskCreate( vSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL ); // privileged mode needed for dma
-  xTaskCreate( vSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL ); // privileged mode needed for dma
-  //xTaskCreate( vSendStatus, "SENDSTATUS", 400, NULL, 2, NULL );
-  xTaskCreate(canbusTask,   "CANBUS",    400, NULL, 2 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
-  xTaskCreate( vDoorlock,  "DOORLOCK", 100, NULL, 2, NULL );
+  task_create(vHeartbeat, "HEARTBEAT", 400, NULL, 2, NULL);
+  task_create(vSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
+  task_create(vSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
+  //task_create(vSendStatus, "SENDSTATUS", 400, NULL, 2, NULL);
+  task_create(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
+  task_create(vDoorlock,  "DOORLOCK", 100, NULL, 2, NULL);
   //vTaskStartTrace(&traceBuff[0], 255);
 
   /* Start the scheduler so our tasks start executing. */
