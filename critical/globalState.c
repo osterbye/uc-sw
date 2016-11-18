@@ -11,6 +11,7 @@
 //define the variables
 #define X(type, name, default_value) static type name = default_value;
 		VARIABLES
+		STATUS_UPDATE
 #undef X
 
 // define the functions
@@ -19,12 +20,14 @@
 	name = value; \
 	}
 	VARIABLES
+	STATUS_UPDATE
 #undef X
 #define X(type, name, default_value) \
 	inline type Get_##name () { \
 	return name; \
 	}
 	VARIABLES
+	STATUS_UPDATE
 #undef X
 
 

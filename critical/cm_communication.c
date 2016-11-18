@@ -25,6 +25,8 @@
 #include "nanopb/pb_encode.h"
 #include "MessageDefinitions.pb.h"
 
+#include "buildStatusUpdate.h"
+
 /* project includes */
 #include "globalState.h"
 #include "cm_communication.h"
@@ -481,4 +483,31 @@ uint64_t CrcDMACalculate (uint8_t length, uint8_t * message){
   crc = crcGetSectorSig(crcREG, CRC_CH1);
 
   return crc;
+}
+
+void sendStatusTask (void *pvParameters) {
+  bool status;
+  uint8_t buffer[256];
+  LOG_INFO("Entering SendStatus task");
+  ContainerMessage container = ContainerMessage_init_zero;
+  container.which_message = ContainerMessage_status_tag;
+  while (1) {
+    pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    buildStatusUpdate(&container.message.status);
+    status = pb_encode(&stream, ContainerMessage_fields, &container);
+    if (!status)
+      LOG_WARN("PB encoding failed: %s", PB_GET_ERROR(&stream));
+    else {
+#ifdef DUMP_STATUS_UPDATE
+      int i;
+      LOG_PRINTF("Sending: ");
+      for (i = 0; i < stream.bytes_written; i++)
+        LOG_PRINTF("%02x ", buffer[i]);
+      LOG_PRINTF("\r\n");
+#endif
+      if (AddToSPITxSlow(stream.bytes_written, buffer))
+        LOG_WARN("not enough space in SPI tx buffer");
+    }
+  }
 }

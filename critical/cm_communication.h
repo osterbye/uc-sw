@@ -16,6 +16,7 @@ uint8_t * GetFromSPITxFast(void);
 
 void vSpiRx (void *pvParameters);
 void vSpiTx (void *pvParameters);
+void sendStatusTask (void *pvParameters);
 
 #define SPIRXMESSAGENRMAX 100
 #define SPIRXMESSAGELENMAX 100

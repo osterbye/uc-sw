@@ -7,7 +7,9 @@
 
 #ifndef CRITICAL_GLOBALSTATE_H_
 #define CRITICAL_GLOBALSTATE_H_
+#include "MessageDefinitions.pb.h"
 #include "globalStateConfig.h"
+#include "statusUpdateConfig.h"
 /* Standard includes. */
 #include <stdio.h>
 #include <stdbool.h>
@@ -22,10 +24,12 @@
 #define X(type, name, default_value) \
 	inline void Set_##name (type value);
 VARIABLES
+STATUS_UPDATE
 #undef X
 #define X(type, name, default_value) \
 	inline type Get_##name ();
 VARIABLES
+STATUS_UPDATE
 #undef X
 
 
