@@ -76,6 +76,9 @@ enum COMMAND_ORIGIN {
 message CommandRequest {
     enum TYPE {
         SETDOORLOCK = 1;
+        COMFORT     = 2;
+        LIGHTS      = 3;
+        DRIVETRAIN  = 4;
     }
 
     message SetDoorLock {

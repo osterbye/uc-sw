@@ -60,6 +60,7 @@ void main(void){
   task_create(vSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(vSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(sendStatusTask, "SENDSTATUS", 800, NULL, 2, NULL);
+  task_create(vSeatSensors, "SEATSENSORS", 400, NULL, 2, NULL);
   task_create(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(vDoorlock,  "DOORLOCK", 100, NULL, 2, NULL);
   //vTaskStartTrace(&traceBuff[0], 255);

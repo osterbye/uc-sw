@@ -5,9 +5,16 @@
  *      Author: lovro
  */
 
-#ifndef CRITICAL_CM_COMMUNICATION_H_
-#define CRITICAL_CM_COMMUNICATION_H_
+#ifndef CRITICAL_CMCOMMUNICATION_H_
+#define CRITICAL_CMCOMMUNICATION_H_
 
+#include <stdint.h>
+
+/* FreeRTOS includes */
+#include "FreeRTOS.h"
+#include "os_task.h"
+#include "os_queue.h"
+#include "os_semphr.h"
 
 uint8_t AckSPITxFast(uint8_t location);
 uint8_t AddToSPITxFast(uint8_t length, uint8_t * message);
@@ -17,6 +24,7 @@ uint8_t * GetFromSPITxFast(void);
 void vSpiRx (void *pvParameters);
 void vSpiTx (void *pvParameters);
 void sendStatusTask (void *pvParameters);
+void commandExecutionTest(void *pvParameters);
 
 #define SPIRXMESSAGENRMAX 100
 #define SPIRXMESSAGELENMAX 100
@@ -39,4 +47,4 @@ typedef enum{
 extern SemaphoreHandle_t xSpiRxFrameCnt;
 extern SemaphoreHandle_t xSpiTxAvailable;
 
-#endif /* CRITICAL_CM_COMMUNICATION_H_ */
+#endif /* CRITICAL_CMCOMMUNICATION_H_ */
