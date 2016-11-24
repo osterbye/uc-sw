@@ -23,6 +23,7 @@
 #include "logging.h"
 
 #include "cm_communication.h"
+#include "spiTransport.h"
 #include "canbus.h"
 #include "het.h"
 
@@ -63,6 +64,8 @@ void main(void){
   task_create(vSeatSensors, "SEATSENSORS", 400, NULL, 2, NULL);
   task_create(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(vDoorlock,  "DOORLOCK", 100, NULL, 2, NULL);
+  //task_create(commandExecutionTest, "COMMANDTEST", 100, NULL, 3, NULL);
+
   //vTaskStartTrace(&traceBuff[0], 255);
 
   /* Start the scheduler so our tasks start executing. */
@@ -74,13 +77,10 @@ void main(void){
      heap available for the idle task to be created. */
   while (1);
 }
-#define HEARTBEAT_PORT gioPORTB
-#define HEARTBEAT_NUM  1
 
 void vHeartbeat(void *pvParameters) {
   while(1){
-	  gioToggleBit(HEARTBEAT_PORT, HEARTBEAT_NUM);
-
+    gioToggleBit(gioPORTB, 1);
     vTaskDelay(500 / portTICK_PERIOD_MS);
   }
 }
