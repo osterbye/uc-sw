@@ -23,6 +23,7 @@
 
 #include "canbus.h"
 #include "cmCommunication.h"
+#include "spiTransport.h"
 
 #include "doorlock.h"
 
@@ -58,7 +59,8 @@ void main(void){
   task_create(sendStatusTask, "SENDSTATUS", 800, NULL, 2, NULL);
   task_create(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(vDoorlock,  "DOORLOCK", 100, NULL, 2, NULL);
-  task_create(commandExecutionTest, "COMMANDTEST", 100, NULL, 3, NULL);
+  //task_create(commandExecutionTest, "COMMANDTEST", 100, NULL, 3, NULL);
+
   //vTaskStartTrace(&traceBuff[0], 255);
 
   /* Start the scheduler so our tasks start executing. */
