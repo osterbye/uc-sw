@@ -18,9 +18,10 @@
 #include "os_queue.h"
 #include "os_semphr.h"
 
-#include "cm_communication.h"
 #include "canbus.h"
 #include "dmaGroupANotification.h"
+
+#include "cmCommunication.h"
 /* DMA interrupt request routine is shared between different modules:
 
     CH0   SPI Rx

@@ -26,7 +26,18 @@
 							</option>
 							<option id="com.ti.ccstudio.buildDefinitions.core.OPT_CODEGEN_VERSION.533853059" name="Compiler version" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_CODEGEN_VERSION" value="16.6.0.STS" valueType="string"/>
 							<targetPlatform id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.targetPlatformDebug.2139540113" name="Platform" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.targetPlatformDebug"/>
-							<builder buildPath="${BuildDirectory}" id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.builderDebug.599809937" keepEnvironmentInBuildfile="false" name="GNU Make" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.builderDebug"/>
+							<builder buildPath="${BuildDirectory}" id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.builderDebug.599809937" keepEnvironmentInBuildfile="false" name="GNU Make" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.builderDebug">
+								<outputEntries>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Debug"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Release"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Debug__opt_for_speed__0"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Debug__opt_for_speed__1"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Debug__opt_for_speed__2"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Debug__opt_for_speed__3"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Debug__opt_for_speed__4"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Debug__opt_for_speed__5"/>
+								</outputEntries>
+							</builder>
 							<tool id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.compilerDebug.720389289" name="ARM Compiler" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.compilerDebug">
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.CODE_STATE.1429192480" name="Designate code state, 16-bit (thumb) or 32-bit (--code_state)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.CODE_STATE" value="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.CODE_STATE.32" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.SILICON_VERSION.1601735048" name="Target processor version (--silicon_version, -mv)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.SILICON_VERSION" value="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.SILICON_VERSION.7R4" valueType="enumerated"/>
@@ -46,6 +57,9 @@
 								</option>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.DIAG_WRAP.1520859915" name="Wrap diagnostic messages (--diag_wrap)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.DIAG_WRAP" value="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.DIAG_WRAP.off" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.DISPLAY_ERROR_NUMBER.343654528" name="Emit diagnostic identifier numbers (--display_error_number, -pden)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.DISPLAY_ERROR_NUMBER" value="true" valueType="boolean"/>
+								<option id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.PREPROC_MODE.656818196" name="Mode" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.PREPROC_MODE" value="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.PREPROC_MODE.automatic" valueType="enumerated"/>
+								<option id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.PREPROC_WITH_COMMENT.1329589985" name="Preprocess only; maintain comments (--preproc_with_comment, -ppc)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.PREPROC_WITH_COMMENT" value="false" valueType="boolean"/>
+								<option id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.PREPROC_WITH_COMPILE.2075205597" name="Continue compilation after using -pp&lt;X&gt; options. (--preproc_with_compile, -ppa)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compilerID.PREPROC_WITH_COMPILE" value="false" valueType="boolean"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__C_SRCS.342740091" name="C Sources" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__C_SRCS"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__CPP_SRCS.170738572" name="C++ Sources" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__CPP_SRCS"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__ASM_SRCS.1502335536" name="Assembly Sources" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__ASM_SRCS"/>
@@ -74,6 +88,21 @@
 							<tool id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.hex.784337327" name="ARM Hex Utility" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.hex"/>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="com.ti.ccstudio.buildDefinitions.TMS470.Debug.181176560.1324573383" name="/" resourcePath="scripts">
+						<toolChain id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.DebugToolchain.1427893615" name="TI Build Tools" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.DebugToolchain" unusedChildren="">
+							<option id="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS.437730265.1149495132" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS.437730265"/>
+							<option id="com.ti.ccstudio.buildDefinitions.core.OPT_CODEGEN_VERSION.533853059.74106893" name="Compiler version" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_CODEGEN_VERSION.533853059"/>
+							<targetPlatform id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.targetPlatformDebug" name="Platform" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.targetPlatformDebug"/>
+							<tool id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.compilerDebug.1788513895" name="ARM Compiler" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.compilerDebug.720389289">
+								<inputType id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__C_SRCS.834354316" name="C Sources" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__C_SRCS"/>
+								<inputType id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__CPP_SRCS.2087116419" name="C++ Sources" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__CPP_SRCS"/>
+								<inputType id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__ASM_SRCS.591060131" name="Assembly Sources" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__ASM_SRCS"/>
+								<inputType id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__ASM2_SRCS.273354824" name="Assembly Sources" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.compiler.inputType__ASM2_SRCS"/>
+							</tool>
+							<tool id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.linkerDebug.1876118134" name="ARM Linker" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.linkerDebug.421917076"/>
+							<tool id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.hex.1072362116" name="ARM Hex Utility" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.hex.784337327"/>
+						</toolChain>
+					</folderInfo>
 					<folderInfo id="com.ti.ccstudio.buildDefinitions.TMS470.Debug.181176560.1130793445" name="/" resourcePath="intercomm">
 						<toolChain id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.DebugToolchain.2084282459" name="TI Build Tools" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.DebugToolchain" unusedChildren="">
 							<option id="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS.437730265.1383197124" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS.437730265"/>
@@ -90,7 +119,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="scripts/proto2cGeneration"/>
+						<entry excluding="tmp|scripts" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

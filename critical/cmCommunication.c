@@ -14,23 +14,16 @@
 #include "spi.h"
 #include "sys_dma.h"
 
-/* FreeRTOS includes */
-#include "FreeRTOS.h"
-#include "os_task.h"
-#include "os_queue.h"
-#include "os_semphr.h"
-
 /* nanopb */
-#include "nanopb/pb_decode.h"
-#include "nanopb/pb_encode.h"
+#include "pb_decode.h"
+#include "pb_encode.h"
 #include "MessageDefinitions.pb.h"
 
 #include "buildStatusUpdate.h"
 
 /* project includes */
+#include "cmCommunication.h"
 #include "globalState.h"
-#include "cm_communication.h"
-
 #include "system.h"
 #include "sys_common.h"
 
@@ -43,6 +36,10 @@ void InitDMASpiRx(void);
 void InitDMASpiTx(void);
 void SetupDMASpiMsgTx(uint32_t length, uint8_t * message);
 uint64_t CrcDMACalculate (uint8_t length, uint8_t * message);
+
+void commandDispatch(const CommandRequest * request);
+
+void TranslateToProtobuf(uint8_t * message, uint16_t length);
 
 SemaphoreHandle_t xSpiRxFrameCnt = NULL;
 SemaphoreHandle_t xSpiTxAvailable = NULL;
@@ -72,7 +69,6 @@ CBuffer_t spiTxSlow = {
 
 void vSpiTx(void *pvParameters){
   uint8_t txBuffer[SPITXBUFFERSIZE] = {0};
-  uint8_t i = 0;
 
   LOG_INFO("Entering SPI TX task ");
 
@@ -296,7 +292,7 @@ ExecuteCommand(const CommandRequest * request) {
 }
 
 /* Stream to protobuff decoding */
-TranslateToProtobuf(uint8_t * message, uint16_t length){
+void TranslateToProtobuf(uint8_t * message, uint16_t length){
   bool status;
   pb_istream_t stream = pb_istream_from_buffer(message, length);
   ContainerMessage container;
@@ -307,10 +303,11 @@ TranslateToProtobuf(uint8_t * message, uint16_t length){
 	  // TODO: handle decode error
   }
 
+
   switch (container.which_message) {
   case ContainerMessage_commandRequest_tag:
     LOG_INFO("Executing command request");
-	  ExecuteCommand(&container.message.commandRequest);
+	  commandDispatch(&container.message.commandRequest);
 	  break;
   case ContainerMessage_commandResponse_tag:
 	  LOG_WARN("Command response handling not implemented");
@@ -322,6 +319,46 @@ TranslateToProtobuf(uint8_t * message, uint16_t length){
 	  LOG_WARN("Received unknown message type %d", container.which_message);
 	  break;
   }
+
+}
+
+
+#include "commandExecution.h"
+typedef void (*commandExecutioner_t)(const CommandRequest *);
+// function pointer list
+
+#define X(commandType) &commandExecution_##commandType,
+  commandExecutioner_t  commandExecutioniersList [_CommandRequest_TYPE_MAX] = { \
+  COMMAND_EXECUTION_TYPES
+  };
+#undef X
+
+void commandExecutionTest(void *pvParameters){
+	//SETDOORLOCK argument lock door
+	uint8_t message[] = {0x12,0x0D,0x08,0xE8,0x07,0x10,0x02,0x18,0x00,0x20,0x01,0x2A,0x02,0x08,0x01};
+	TranslateToProtobuf(message, sizeof(message));
+	while(1);
+}
+
+void commandDispatch(const CommandRequest * request)
+{
+commandResponse_t response = 0;
+  // check if it has type
+  if(!request->has_type){
+    LOG_WARN("Could not execute command -> It has no type!");
+    return;
+  }
+  // check if type is in range
+  if((request->type > _CommandRequest_TYPE_MAX) ||
+    (request->type < _CommandRequest_TYPE_MIN)){
+     LOG_WARN("Could not execute command -> Type not supported!");
+     // send command response - UNSUPPORTED
+     return;
+   }
+  //execute command
+  //response =
+  commandExecutioniersList[request->type -1 ](request);
+  // send response to CM
 
 }
 
