@@ -44,7 +44,7 @@ void dmaGroupANotification(dmaInterrupt_t inttype, uint32 channel)
         break;
     case DMA_CH1: // SPI TX DMA channel
         if(BTC == inttype){
-            gioSetBit(gioPORTB,1,0); // set request to transmit to active
+            gioSetBit(S2M_INT_PORT, S2M_INT_NUM, 0); // set request to transmit to inactive
             xSemaphoreGiveFromISR(xSpiTxAvailable,&xHigherPriorityTaskWoken); // XXX todo check waking up of the task
         }
         break;

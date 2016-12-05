@@ -24,6 +24,9 @@ void sendStatusTask (void *pvParameters);
 #define SPIRXBUFFERSIZE 10
 #define SPITXBUFFERSIZE 128
 
+#define S2M_INT_PORT   spiPORT4
+#define S2M_INT_NUM    0
+
 typedef enum{
 	SPIRX_WAITINGFORPREAMBULE1BYTE, /*0xAA*/
 	SPIRX_WAITINGFORPREAMBULE2BYTE, /*0x55*/

@@ -71,9 +71,12 @@ void main(void){
   while (1);
 }
 
+#define HEARTBEAT_PORT gioPORTB
+#define HEARTBEAT_NUM  1
+
 void vHeartbeat (void *pvParameters){
   while(1){
-	  gioToggleBit(gioPORTB, 1);
+	  gioToggleBit(HEARTBEAT_PORT, HEARTBEAT_NUM);
     vTaskDelay(500 / portTICK_PERIOD_MS);
   }
 }

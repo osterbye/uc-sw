@@ -140,8 +140,8 @@ void vSpiTx(void *pvParameters){
         /*send the message*/
         length+=8;
         LOG_INFO("Starting transmission");
-        gioSetBit(gioPORTB,1,1); // set request to transmitt to active
         SetupDMASpiMsgTx(length, txBuffer);
+        gioSetBit(S2M_INT_PORT, S2M_INT_NUM, 1); // set request to transmitt to active
       }
     }
   }
