@@ -145,7 +145,7 @@ static void canbusDumpReceivedUART() {
     /* iterate messages from oldest to most recent */
     do {
         toHexString(hexMsg, &(xReceiveBuffer[i].pdu), canGetDLC(&xReceiveBuffer[i]));
-        LOG_DEBUG("%03X: %s\r\n", xReceiveBuffer[i].id, hexMsg);
+        LOG_DEBUG("%03X: %s", xReceiveBuffer[i].id, hexMsg);
         i  = (i + 1) % canRECEIVE_BUFFER_SIZE;
     } while (i != uWriteIndex);
 }
@@ -201,12 +201,16 @@ static void handleReceivedMessages() {
     }
 }
 
-uint8_t tx_data[16] = {0,1,2,3,4,5,6,7,8,9}; // "abcdefgh";
+uint8_t tx_data[16] = {0,1,2,3,4,5,6,7,8,9};
+
+// CBO macro turns LE data into BE data index:
+// 0 1 2 3 4 5 6 7  ->  3 2 1 0 7 6 5 4
+#define CBO(x)   s_canByteOrder[x]
 
 void canbusTask(void *pvParameters) {
     uint16_t counter = 0x660;
     float speed;
-    uint8_t canBusNum = 3;
+    uint8_t canBusNum = 1;
     //canbusDumpReceivedUART();
 
     while(1){
