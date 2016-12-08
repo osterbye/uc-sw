@@ -4,54 +4,23 @@
 
 #define STATUS_UPDATE                  \
 	X(int32_t   , timestamp           , 0) \
-	X(float     , voltageLV           , 0) \
-	X(float     , voltageHV           , 0) \
 	X(float     , locLongitude        , 0) \
 	X(float     , locLatitude         , 0) \
 	X(float     , locAltitude         , 0) \
 	X(float     , speedGPS            , 0) \
-	X(float     , speedInverter       , 0) \
-	X(float     , speedWheelSensor    , 0) \
-	X(float     , speedDisplayed      , 0) \
-	X(float     , minInverterCurr     , 0) \
-	X(float     , maxInverterCurr     , 0) \
-	X(float     , avgInverterCurr     , 0) \
-	X(float     , tempInverter        , 0) \
-	X(float     , tempMotor           , 0) \
-	X(float     , minChargerCurrent   , 0) \
-	X(float     , maxChargerCurrent   , 0) \
-	X(float     , avgChargerCurrent   , 0) \
-	X(float     , tempCharger         , 0) \
-	X(float     , tempDCDC            , 0) \
-	X(bool      , fanDCDCState        , 0) \
-	X(bool      , frontLong           , 0) \
-	X(bool      , frontShort          , 0) \
-	X(bool      , DRL                 , 0) \
-	X(bool      , frontFog            , 0) \
-	X(bool      , backFog             , 0) \
-	X(bool      , breakLight          , 0) \
-	X(bool      , hazardButton        , 0) \
-	X(bool      , panicButton         , 0) \
-	X(bool      , seatHeaterFR        , 0) \
-	X(bool      , seatHeaterFL        , 0) \
-	X(bool      , seatHeaterRR        , 0) \
-	X(bool      , seatHeaterRL        , 0) \
-	X(bool      , seatSensorFR        , 0) \
-	X(bool      , seatSensorFL        , 0) \
-	X(bool      , seatSensorRR        , 0) \
-	X(bool      , seatSensorRL        , 0) \
+	X(bool      , seatOccupiedFR      , 0) \
+	X(bool      , seatOccupiedFL      , 0) \
+	X(bool      , seatOccupiedRR      , 0) \
+	X(bool      , seatOccupiedRL      , 0) \
 	X(bool      , blinkerLeft         , 0) \
 	X(bool      , blinkerRight        , 0) \
 	X(bool      , doorOpenFR          , 0) \
 	X(bool      , doorOpenFL          , 0) \
 	X(bool      , doorOpenRR          , 0) \
 	X(bool      , doorOpenRL          , 0) \
-	X(bool      , doorLockedFR        , 0) \
-	X(bool      , doorLockedFL        , 0) \
-	X(bool      , doorLockedRR        , 0) \
-	X(bool      , doorLockedRL        , 0) \
+	X(bool      , vehicleLocked       , 0) \
 
-/* activeError not included because repeated fields need special handling */
+
 
 #endif /* RELAXED_STATUSUPDATECONFIG_H_*/
 
