@@ -50,7 +50,7 @@ static void setupCanInterface(enum canInterfaces interface, const CanMessage_t *
         return;
     }
 
-#if (CANBUS_ENABLE_LOOPBACK == 1)
+#if (CANBUS_LOOPBACK == ON)
     canEnableloopback(canBase, External_Lbk);
 #endif
     /* Update Enable for message for first 63 message objects (mailboxes) for receiving */
@@ -88,13 +88,13 @@ static void setupCanInterface(enum canInterfaces interface, const CanMessage_t *
 
 void canbusInit() {
     canInit();
-#if (CANBUS_USE_INTERFACE_CAN1 == 1)
+#if (CANBUS_INTERFACE_CAN1 == ON)
     setupCanInterface(CANBUS1, &xReceiveBuffer[0]);
 #endif
-#if (CANBUS_USE_INTERFACE_CAN2 == 1)
+#if (CANBUS_INTERFACE_CAN2 == ON)
     setupCanInterface(CANBUS2, &xReceiveBuffer[0]);
 #endif
-#if (CANBUS_USE_INTERFACE_CAN3 == 1)
+#if (CANBUS_INTERFACE_CAN3 == ON)
     setupCanInterface(CANBUS3, &xReceiveBuffer[0]);
     /* Demonstration of ignoring specific CAN id (0x666) - in HALCoGen, the first mailbox is set to
        receive specific ID, and that mailbox is now configured not to trigger IF3 automatic update */
@@ -137,19 +137,6 @@ static void toHexString(char * dst, const uint8_t * src, unsigned length) {
     }
 }
 
-static void canbusDumpReceivedUART() {
-    char hexMsg[8*3 + 1];
-    /* dump whole CAN buffer to UART */
-    uint16_t i = uWriteIndex;
-    LOG_INFO("CAN receive buffer dump:");
-    /* iterate messages from oldest to most recent */
-    do {
-        toHexString(hexMsg, &(xReceiveBuffer[i].pdu), canGetDLC(&xReceiveBuffer[i]));
-        LOG_DEBUG("%03X: %s", xReceiveBuffer[i].id, hexMsg);
-        i  = (i + 1) % canRECEIVE_BUFFER_SIZE;
-    } while (i != uWriteIndex);
-}
-
 static void canbusSendMessage(enum canInterfaces interface, uint32_t canID, uint8_t dlc, const uint8_t * pdu) {
     uint32_t success;
     canBASE_t * canBase;
@@ -189,6 +176,9 @@ CanbusMessageHandler_t handlers[] = {
 
 static void handleReceivedMessages() {
     int i;
+#if (CANBUS_RX_DUMP == ON)
+    char hexMsg[8*3 + 1];
+#endif
     const int handlersCount = sizeof(handlers) / sizeof(CanbusMessageHandler_t);
     if (uReadIndex != uWriteIndex) { /* new messages pending */
         /* execute all handlers with same ID */
@@ -197,6 +187,10 @@ static void handleReceivedMessages() {
                 handlers[i].handlerFunction(&xReceiveBuffer[uReadIndex]); 
             }
         }
+#if (CANBUS_RX_DUMP == ON)
+        toHexString(hexMsg, &(xReceiveBuffer[uReadIndex].pdu), canGetDLC(&xReceiveBuffer[uReadIndex]));
+#endif
+        LOG_DEBUG("%03X: %s", xReceiveBuffer[uReadIndex].id, hexMsg);
         uReadIndex = (uReadIndex + 1) % canRECEIVE_BUFFER_SIZE;
     }
 }
@@ -209,23 +203,16 @@ uint8_t tx_data[16] = {0,1,2,3,4,5,6,7,8,9};
 
 void canbusTask(void *pvParameters) {
     uint16_t counter = 0x660;
-    float speed;
-    uint8_t canBusNum = 1;
-    //canbusDumpReceivedUART();
 
     while(1){
     	counter++;
         /*tx_data[2] = 0x12 + counter;
         tx_data[3] = 0x34;
         tx_data[6] = '0' + (counter++ % 10);*/
-        canbusSendMessage(canBusNum, counter, 8, tx_data); // + (counter % 3)
-        LOG_INFO("sent CAN msg");
+        //canbusSendMessage(canBusNum, counter, 8, tx_data); // + (counter % 3)
+        //LOG_INFO("sent CAN msg");
 
-        if (counter % canRECEIVE_BUFFER_SIZE == 0)
-            canbusDumpReceivedUART();
-
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        vTaskDelay(10 / portTICK_PERIOD_MS);
         handleReceivedMessages();
-        speed = Get_fSpeedMPH();
     }
 }
