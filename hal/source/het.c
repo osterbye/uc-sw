@@ -2203,20 +2203,20 @@ void hetInit(void)
                     | (uint32) 0x00000000U
                     | (uint32) 0x00000000U
                     | (uint32) 0x00000000U
+                    | (uint32) 0x00080000U
+                    | (uint32) 0x00000000U
+                    | (uint32) 0x00000000U
+                    | (uint32) 0x00000000U
+                    | (uint32) 0x00008000U
+                    | (uint32) 0x00000000U
+                    | (uint32) 0x00002000U
                     | (uint32) 0x00000000U
                     | (uint32) 0x00000000U
                     | (uint32) 0x00000000U
                     | (uint32) 0x00000000U
                     | (uint32) 0x00000000U
                     | (uint32) 0x00000000U
-                    | (uint32) 0x00000000U
-                    | (uint32) 0x00000000U
-                    | (uint32) 0x00000000U
-                    | (uint32) 0x00000000U
-                    | (uint32) 0x00000000U
-                    | (uint32) 0x00000000U
-                    | (uint32) 0x00000000U
-                    | (uint32) 0x00000000U
+                    | (uint32) 0x00000040U
                     | (uint32) 0x00000000U
                     | (uint32) 0x00000000U
                     | (uint32) 0x00000000U
@@ -2237,20 +2237,20 @@ void hetInit(void)
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
+                 | (uint32) 0x00080000U
+                 | (uint32) 0x00000000U
+                 | (uint32) 0x00000000U
+                 | (uint32) 0x00000000U
+                 | (uint32) 0x00008000U
+                 | (uint32) 0x00000000U
+                 | (uint32) 0x00002000U
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
+                 | (uint32) 0x00000040U
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
@@ -2447,7 +2447,7 @@ void hetInit(void)
     *     - Enable HET
     */
     hetREG1->GCR = ( 0x00000001U 
-                   | (uint32)((uint32)0U << 24U)
+                   | (uint32)((uint32)1U << 24U)
 	               | (uint32)((uint32)1U << 16U)
                    | (0x00020000U));
 
