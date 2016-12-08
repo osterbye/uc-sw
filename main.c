@@ -24,11 +24,13 @@
 
 #include "cm_communication.h"
 #include "canbus.h"
+#include "het.h"
 
 #include "doorlock.h"
 
 void vHeartbeat (void *pvParameters);
-																									\
+void vSeatSensors(void *pvParameters);
+
 void vApplicationMallocFailedHook( void ) {
 	LOG_CRITICAL("Application malloc failed, bigger heap needed?");
 }
@@ -48,6 +50,7 @@ void main(void){
   gioInit(); // General input output
   dmaEnable();
   spiInit();
+  hetInit();
   canbusInit();
   // Enable SPI3 DMAreqs
   spiREG3->INT0 = (spiREG3->INT0 & 0xFFFEFFFFU) | (uint32)((uint32)1U << 16U);  /* ENABLE DMAREQ */
@@ -70,13 +73,21 @@ void main(void){
      heap available for the idle task to be created. */
   while (1);
 }
-
 #define HEARTBEAT_PORT gioPORTB
 #define HEARTBEAT_NUM  1
 
-void vHeartbeat (void *pvParameters){
+void vHeartbeat(void *pvParameters) {
   while(1){
 	  gioToggleBit(HEARTBEAT_PORT, HEARTBEAT_NUM);
+
     vTaskDelay(500 / portTICK_PERIOD_MS);
   }
+}
+
+void vSeatSensors(void *pvParameters) {
+	Set_seatOccupiedFL(gioGetBit(hetPORT1, 15));
+	Set_seatOccupiedFR(gioGetBit(hetPORT1, 13));
+	Set_seatOccupiedRL(gioGetBit(hetPORT1, 6));
+	Set_seatOccupiedRR(gioGetBit(hetPORT1, 19));
+    vTaskDelay(100 / portTICK_PERIOD_MS);
 }
