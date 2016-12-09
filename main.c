@@ -86,9 +86,17 @@ void vHeartbeat(void *pvParameters) {
 }
 
 void vSeatSensors(void *pvParameters) {
-	Set_seatOccupiedFL(gioGetBit(hetPORT1, 15));
-	Set_seatOccupiedFR(gioGetBit(hetPORT1, 13));
-	Set_seatOccupiedRL(gioGetBit(hetPORT1, 6));
-	Set_seatOccupiedRR(gioGetBit(hetPORT1, 19));
-    vTaskDelay(100 / portTICK_PERIOD_MS);
+	while(1) {
+		uint8_t any[4] = {0};
+		Set_seatOccupiedFL(gioGetBit(hetPORT1, 15));
+		any[0] = Get_seatOccupiedFL();
+		Set_seatOccupiedFR(gioGetBit(hetPORT1, 13));
+		any[1] = Get_seatOccupiedFR();
+		Set_seatOccupiedRL(gioGetBit(hetPORT1, 6));
+		any[2] = Get_seatOccupiedRL();
+		Set_seatOccupiedRR(gioGetBit(hetPORT1, 19));
+		any[3] = Get_seatOccupiedRR();
+		LOG_INFO("seats: %d %d %d %d\n", any[0], any[1], any[2], any[3]);
+	    vTaskDelay(200 / portTICK_PERIOD_MS);
+	}
 }
