@@ -22,7 +22,7 @@
 #include "globalState.h"
 #include "logging.h"
 
-#include "cm_communication.h"
+#include "cmCommunication.h"
 #include "spiTransport.h"
 #include "canbus.h"
 #include "het.h"
