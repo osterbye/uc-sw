@@ -26,9 +26,9 @@ typedef struct{
   CBUFFERTYPE * data;
 } CBuffer_t;
 
-size_t CBufferFree(CBuffer_t * buffer);
-size_t CBufferTaken(CBuffer_t * buffer);
-CBufferError_t CBufferPushMultiple(CBuffer_t * buffer, CBUFFERTYPE length, CBUFFERTYPE * data);
+size_t CBufferFree(const CBuffer_t * buffer);
+size_t CBufferTaken(const CBuffer_t * buffer);
+CBufferError_t CBufferPushMultiple(CBuffer_t * buffer, CBUFFERTYPE length, const CBUFFERTYPE * data);
 CBufferError_t CBufferPush(CBuffer_t * buffer, CBUFFERTYPE data);
 CBufferError_t CBufferPopMultiple(CBuffer_t * buffer, CBUFFERTYPE length, CBUFFERTYPE * result);
 CBUFFERTYPE CBufferPop(CBuffer_t * buffer);

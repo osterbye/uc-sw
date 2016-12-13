@@ -9,20 +9,17 @@
 
 #include "cbuffer.h"
 
-size_t CBufferFree(CBuffer_t * buffer){
-  return buffer->size - CBufferTaken(buffer) - 1;
+size_t CBufferFree(const CBuffer_t * buffer){
+  return buffer->size - CBufferTaken(buffer);
+}
+#include "stdio.h"
+size_t CBufferTaken(const CBuffer_t * buffer){
+  size_t taken = buffer->head + buffer->size - buffer->tail;
+  taken = taken % buffer->size - 1;
+  return taken;
 }
 
-size_t CBufferTaken(CBuffer_t * buffer){
-
-  if (buffer->head > buffer->tail){
-    return (buffer->head - buffer->tail) - 1;
-  } else {
-    return (buffer->tail - buffer->head) - 1;
-  }
-}
-
-CBufferError_t CBufferPushMultiple(CBuffer_t * buffer, CBUFFERTYPE length, CBUFFERTYPE * data){
+CBufferError_t CBufferPushMultiple(CBuffer_t * buffer, CBUFFERTYPE length, const CBUFFERTYPE * data){
   CBUFFERTYPE i = 0;
 
   if(CBufferFree(buffer) > length){
