@@ -9,21 +9,28 @@
 #define CRITICAL_CBUFFER_H_
 
 #include "stdint.h"
+#include "stddef.h"
 
 #define CBUFFERTYPE uint8_t
 
+typedef enum {
+    NO_ERROR = 0,
+    NOT_ENOUGH_SPACE = 1,
+    NOT_ENOUGH_DATA = 2
+} CBufferError_t;
+
 typedef struct{
-  CBUFFERTYPE size;
-  CBUFFERTYPE head;
-  CBUFFERTYPE tail;
+  size_t size;
+  size_t head;
+  size_t tail;
   CBUFFERTYPE * data;
 } CBuffer_t;
 
-CBUFFERTYPE CBufferFree(CBuffer_t * buffer);
-CBUFFERTYPE CBufferTaken(CBuffer_t * buffer);
-CBUFFERTYPE CBufferPushMultiple(CBuffer_t * buffer, CBUFFERTYPE length, CBUFFERTYPE * data);
-CBUFFERTYPE CBufferPush(CBuffer_t * buffer, CBUFFERTYPE data);
-CBUFFERTYPE CBufferPopMultiple(CBuffer_t * buffer, CBUFFERTYPE length, CBUFFERTYPE * result);
+size_t CBufferFree(CBuffer_t * buffer);
+size_t CBufferTaken(CBuffer_t * buffer);
+CBufferError_t CBufferPushMultiple(CBuffer_t * buffer, CBUFFERTYPE length, CBUFFERTYPE * data);
+CBufferError_t CBufferPush(CBuffer_t * buffer, CBUFFERTYPE data);
+CBufferError_t CBufferPopMultiple(CBuffer_t * buffer, CBUFFERTYPE length, CBUFFERTYPE * result);
 CBUFFERTYPE CBufferPop(CBuffer_t * buffer);
 
 #endif /* CRITICAL_CBUFFER_H_ */

@@ -9,11 +9,11 @@
 
 #include "cbuffer.h"
 
-CBUFFERTYPE CBufferFree(CBuffer_t * buffer){
+size_t CBufferFree(CBuffer_t * buffer){
   return buffer->size - CBufferTaken(buffer) - 1;
 }
 
-CBUFFERTYPE CBufferTaken(CBuffer_t * buffer){
+size_t CBufferTaken(CBuffer_t * buffer){
 
   if (buffer->head > buffer->tail){
     return (buffer->head - buffer->tail) - 1;
@@ -22,7 +22,7 @@ CBUFFERTYPE CBufferTaken(CBuffer_t * buffer){
   }
 }
 
-CBUFFERTYPE CBufferPushMultiple(CBuffer_t * buffer, CBUFFERTYPE length, CBUFFERTYPE * data){
+CBufferError_t CBufferPushMultiple(CBuffer_t * buffer, CBUFFERTYPE length, CBUFFERTYPE * data){
   CBUFFERTYPE i = 0;
 
   if(CBufferFree(buffer) > length){
@@ -33,17 +33,17 @@ CBUFFERTYPE CBufferPushMultiple(CBuffer_t * buffer, CBUFFERTYPE length, CBUFFERT
         buffer->head = 0;
       }
     }
-  } else {  // not enough space
-    return 1;
+  } else {
+    return NOT_ENOUGH_SPACE;
   }
-  return 0;
+  return NO_ERROR;
 }
 
-CBUFFERTYPE CBufferPush(CBuffer_t * buffer, CBUFFERTYPE data){
+CBufferError_t CBufferPush(CBuffer_t * buffer, CBUFFERTYPE data){
   return CBufferPushMultiple(buffer, 1, &data);
 }
 
-CBUFFERTYPE CBufferPopMultiple(CBuffer_t * buffer, CBUFFERTYPE length, CBUFFERTYPE * result){
+CBufferError_t CBufferPopMultiple(CBuffer_t * buffer, CBUFFERTYPE length, CBUFFERTYPE * result){
   uint8_t i = 0;
 
   if(CBufferTaken(buffer)>= length){
@@ -54,10 +54,10 @@ CBUFFERTYPE CBufferPopMultiple(CBuffer_t * buffer, CBUFFERTYPE length, CBUFFERTY
       }
       *(result + i) = *(buffer->data + buffer->tail);
     }
-  } else { // not enough data 
-    return 1;
+  } else { 
+    return NOT_ENOUGH_DATA;
   }
-  return 0;
+  return NO_ERROR;
 }
 
 CBUFFERTYPE CBufferPop(CBuffer_t * buffer){
