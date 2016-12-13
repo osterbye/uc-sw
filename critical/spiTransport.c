@@ -42,7 +42,7 @@ typedef struct{
 }spiTxFast_t;
 spiTxFast_t spiTxFast[SPITXFASTNR] = {0};
 
-#define SPITXSLOWBUFFERSIZE 100
+#define SPITXSLOWBUFFERSIZE 0x100
 
 uint8_t spiTxSlowBuffer[SPITXSLOWBUFFERSIZE] = {0};
 CBuffer_t spiTxSlow = {
@@ -64,7 +64,7 @@ void vSpiTx(void *pvParameters){
   xSemaphoreGive(xSpiTxAvailable);
 
   initDMASpiTx();
-  uint8_t txMessageAvailable = TRUE;
+  uint8_t txMessageAvailable = FALSE;
 
   while(1){
 
@@ -86,7 +86,7 @@ void vSpiTx(void *pvParameters){
         CBufferPopMultiple(&spiTxSlow, length, &txBuffer[8]);
         txMessageAvailable = TRUE;
       } else { // nothing available try again in a few miliseconds
-        //xSemaphoreGive(xSpiTxAvailable);
+        xSemaphoreGive(xSpiTxAvailable);
         vTaskDelay(10 / portTICK_PERIOD_MS);
       }
 
@@ -94,6 +94,7 @@ void vSpiTx(void *pvParameters){
       if(txMessageAvailable){
 
         uint64_t crc = 0;
+        length += 8 + 8;
 
         txMessageAvailable = FALSE;
 
@@ -103,10 +104,8 @@ void vSpiTx(void *pvParameters){
         txBuffer[3]=0x11;
         txBuffer[4]=0x11;
         txBuffer[5]=0x11;
-        txBuffer[6]=(uint8_t)(length & 0xFF);
-        txBuffer[7]=(uint8_t)((length >> 8) & 0xFF);
-
-        length = 0; // todo delete this
+        txBuffer[6]=(uint8_t)((length >> 8) & 0xFF);
+        txBuffer[7]=(uint8_t)(length & 0xFF);
 
         /* pad by zeros untill divisible by 8 */
         /*for (i = 0; i < (8 - length / 8); i++){
@@ -120,7 +119,6 @@ void vSpiTx(void *pvParameters){
         /*add crc length*/
         //length += 8;
         /*send the message*/
-        length+=8;
         LOG_INFO("Starting transmission");
         gioSetBit(gioPORTB,1,1); // set request to transmitt to active
         setupDMASpiMsgTx(length, txBuffer);
