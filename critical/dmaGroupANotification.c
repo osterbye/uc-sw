@@ -41,13 +41,13 @@ void dmaGroupANotification(dmaInterrupt_t inttype, uint32 channel)
     switch (channel){
     case DMA_CH0: // SPI RX DMA channel
         if(FTC == inttype){ /* Frame transfer complete interrupt*/
-            xSemaphoreGiveFromISR(xSpiRxFrameCnt,&xHigherPriorityTaskWoken); // XXX todo check waking up of the task
+            xSemaphoreGiveFromISR(spiRxFrameCount,&xHigherPriorityTaskWoken); // XXX todo check waking up of the task
         }
         break;
     case DMA_CH1: // SPI TX DMA channel
         if(BTC == inttype){
             gioSetBit(spiPORT4, 0, 0); // set request to transmit to inactive
-            xSemaphoreGiveFromISR(xSpiTxAvailable,&xHigherPriorityTaskWoken); // XXX todo check waking up of the task
+            xSemaphoreGiveFromISR(spiTxAvailable,&xHigherPriorityTaskWoken); // XXX todo check waking up of the task
         }
         break;
     case DMA_CH13: // fall-through

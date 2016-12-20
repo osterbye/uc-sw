@@ -121,7 +121,7 @@ void sendStatusTask (void *pvParameters) {
         LOG_PRINTF("%02x ", buffer[i]);
       LOG_PRINTF("\r\n");
 #endif
-      if (addToSPITxSlow(stream.bytes_written, buffer))
+      if (spiTxPush(stream.bytes_written, buffer))
         LOG_WARN("not enough space in SPI tx buffer");
     }
   }

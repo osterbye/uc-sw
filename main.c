@@ -58,8 +58,8 @@ void main(void){
   
   LOG_INFO("Creating tasks");
   task_create(vHeartbeat, "HEARTBEAT", 400, NULL, 2, NULL);
-  task_create(vSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
-  task_create(vSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
+  task_create(taskSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
+  task_create(taskSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(sendStatusTask, "SENDSTATUS", 800, NULL, 2, NULL);
   task_create(vSeatSensors, "SEATSENSORS", 400, NULL, 2, NULL);
   task_create(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
