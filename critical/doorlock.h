@@ -9,7 +9,7 @@
 #define DOOR_UNLOCK_PORT gioPORTB
 #define DOOR_UNLOCK_NUM  2
 
-void vDoorlock (void *pvParameters);
+void doorlockTask (void *pvParameters);
 void doorlockRequestState(bool locked);
 
 #endif /* DOORLOCK_H */

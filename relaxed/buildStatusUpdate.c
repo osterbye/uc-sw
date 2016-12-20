@@ -40,6 +40,5 @@ void buildStatusUpdate(StatusUpdate * status) {
 	status->has_vehicleLocked = true;
 	status->vehicleLocked = Get_vehicleLocked();
 
-
 }
 

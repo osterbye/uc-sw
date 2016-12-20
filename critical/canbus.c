@@ -9,13 +9,13 @@
 #include "canbus.h"
 #include "logging.h"
 
-#define canRECEIVE_BUFFER_SIZE 20
+#define CANRECEIVEBUFFERSIZE 20
 
-CanMessage_t xReceiveBuffer[canRECEIVE_BUFFER_SIZE]; /* used as circular buffer */
-static uint16_t uWriteIndex = 0;
-static uint16_t uReadIndex  = 0;
+CanMessage_t xReceiveBuffer[CANRECEIVEBUFFERSIZE]; /* used as circular buffer */
+static uint16_t writeIndex = 0;
+static uint16_t readIndex  = 0;
 
-static bool canIsMessageLost = false;
+static bool canbusIsMessageLost = false;
 
 static inline uint32_t extractID(uint32_t arb) {
     if (arb & (1 << 29))                      /* standard/extended identifier in flag [30] */
@@ -105,13 +105,13 @@ void canbusInit() {
 
 void canbusDmaNotification(dmaInterrupt_t inttype, uint32 channel) {
     /* DMA actually copies arbitration register, so here ID is extracted from it */
-    xReceiveBuffer[uWriteIndex].id = extractID(xReceiveBuffer[uWriteIndex].id);
+    xReceiveBuffer[writeIndex].id = extractID(xReceiveBuffer[writeIndex].id);
     /* if recieved message was written over unread message, set global flag */
-    canIsMessageLost |= (xReceiveBuffer[uWriteIndex].mctl >> 14) & 1U;
+    canbusIsMessageLost |= (xReceiveBuffer[writeIndex].mctl >> 14) & 1U;
 
     /* calculate the destination address for next message and update DMA unit */
-    uWriteIndex = (uWriteIndex + 1) % canRECEIVE_BUFFER_SIZE;
-    CanMessage_t * dest = &xReceiveBuffer[0] + (uWriteIndex);
+    writeIndex = (writeIndex + 1) % CANRECEIVEBUFFERSIZE;
+    CanMessage_t * dest = &xReceiveBuffer[0] + (writeIndex);
     /* Instead of using dmaSetCtrlPacket() to change single register, it is done
      * more efficiently by directly changing the IDADDR in control packet */
     dmaRAMREG->PCP[DMA_CH13].IDADDR = (uint32) dest;
@@ -180,18 +180,18 @@ static void handleReceivedMessages() {
     char hexMsg[8*3 + 1];
 #endif
     const int handlersCount = sizeof(handlers) / sizeof(CanbusMessageHandler_t);
-    if (uReadIndex != uWriteIndex) { /* new messages pending */
+    if (readIndex != writeIndex) { /* new messages pending */
         /* execute all handlers with same ID */
         for (i = 0; i < handlersCount; i++) {
-            if (xReceiveBuffer[uReadIndex].id == handlers[i].id) {
-                handlers[i].handlerFunction(&xReceiveBuffer[uReadIndex]); 
+            if (xReceiveBuffer[readIndex].id == handlers[i].id) {
+                handlers[i].handlerFunction(&xReceiveBuffer[readIndex]); 
             }
         }
 #if (CANBUS_RX_DUMP == ON)
-        toHexString(hexMsg, &(xReceiveBuffer[uReadIndex].pdu), canGetDLC(&xReceiveBuffer[uReadIndex]));
+        toHexString(hexMsg, &(xReceiveBuffer[readIndex].pdu), canGetDLC(&xReceiveBuffer[readIndex]));
 #endif
-        LOG_DEBUG("%03X: %s", xReceiveBuffer[uReadIndex].id, hexMsg);
-        uReadIndex = (uReadIndex + 1) % canRECEIVE_BUFFER_SIZE;
+        LOG_DEBUG("%03X: %s", xReceiveBuffer[readIndex].id, hexMsg);
+        readIndex = (readIndex + 1) % CANRECEIVEBUFFERSIZE;
     }
 }
 

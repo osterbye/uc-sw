@@ -29,8 +29,8 @@
 
 #include "doorlock.h"
 
-void vHeartbeat (void *pvParameters);
-void vSeatSensors(void *pvParameters);
+void HeartbeatTask (void *pvParameters);
+void SeatSensorsTask(void *pvParameters);
 
 void vApplicationMallocFailedHook( void ) {
 	LOG_CRITICAL("Application malloc failed, bigger heap needed?");
@@ -57,13 +57,13 @@ void main(void){
   spiREG3->INT0 = (spiREG3->INT0 & 0xFFFEFFFFU) | (uint32)((uint32)1U << 16U);  /* ENABLE DMAREQ */
   
   LOG_INFO("Creating tasks");
-  task_create(vHeartbeat, "HEARTBEAT", 400, NULL, 2, NULL);
+  task_create(HeartbeatTask, "HEARTBEAT", 400, NULL, 2, NULL);
   task_create(vSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(vSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(sendStatusTask, "SENDSTATUS", 800, NULL, 2, NULL);
-  task_create(vSeatSensors, "SEATSENSORS", 400, NULL, 2, NULL);
+  task_create(SeatSensorsTask, "SEATSENSORS", 400, NULL, 2, NULL);
   task_create(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
-  task_create(vDoorlock,  "DOORLOCK", 100, NULL, 2, NULL);
+  task_create(doorlockTask,  "DOORLOCK", 100, NULL, 2, NULL);
   //task_create(commandExecutionTest, "COMMANDTEST", 100, NULL, 3, NULL);
 
   //vTaskStartTrace(&traceBuff[0], 255);
@@ -78,14 +78,14 @@ void main(void){
   while (1);
 }
 
-void vHeartbeat(void *pvParameters) {
+void HeartbeatTask(void *pvParameters) {
   while(1){
     gioToggleBit(gioPORTB, 1);
     vTaskDelay(500 / portTICK_PERIOD_MS);
   }
 }
 
-void vSeatSensors(void *pvParameters) {
+void SeatSensorsTask(void *pvParameters) {
 	while(1) {
 		uint8_t any[4] = {0};
 		Set_seatOccupiedFL(gioGetBit(hetPORT1, 15));

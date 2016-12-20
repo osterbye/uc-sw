@@ -13,14 +13,21 @@ enum doorRequest {
 static enum doorRequest requestedDoorState = DOOR_NOREQUEST;
 
 void doorlockRequestState(bool locked) {
-	if (locked)
+	if (locked) {
 		LOG_INFO("Locking door");
-	else
+	} else {
 		LOG_INFO("Unlocking door");
-	requestedDoorState = locked ? DOOR_LOCK : DOOR_UNLOCK;
+	}
+
+	if(locked){
+		requestedDoorState = DOOR_LOCK;
+	} else {
+		requestedDoorState = DOOR_UNLOCK;
+	}
+
 }
 
-void vDoorlock (void *pvParameters){
+void doorlockTask (void *pvParameters){
 
 	while (1) {
 		if (requestedDoorState == DOOR_LOCK) {

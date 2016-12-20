@@ -10,8 +10,9 @@
 char loggingBuffer[LOGGING_BUFFER_LENGTH] = {0};
 
 void loggingInit() {
-    sciInit();
-    uint8 character = 0x0A;
+	uint8 character = 0x0A;
+
+	sciInit();
     sciSend(scilinREG, 1, &character);
     LOG_INFO("--------------------------");
     LOG_INFO("Logging module initialized");
