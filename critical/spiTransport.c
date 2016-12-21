@@ -61,7 +61,7 @@ spiTxFast_t spiTxFast[SPITXFASTNR] = {0};
 #define SPITXSLOWBUFFERSIZE 0x100
 
 uint8_t spiTxSlowBuffer[SPITXSLOWBUFFERSIZE] = {0};
-CBuffer_t spiTxSlow = {
+cbuffer_t spiTxSlow = {
     .size = SPITXSLOWBUFFERSIZE,
     .head = 1,
     .tail = 0,
@@ -106,10 +106,10 @@ void taskSpiTx(void *pvParameters) {
                 length = SPITXFASTMESSAGESIZEMAX;
                 memcpy(&txBuffer[8], fastMessage, length);
                 txMessageAvailable = TRUE;
-            } else if (CBufferTaken(&spiTxSlow)) { // check if a message is available
-                length = CBufferPop(&spiTxSlow);
+            } else if (cbufferTaken(&spiTxSlow)) { // check if a message is available
+                length = cbufferPop(&spiTxSlow);
                 /* TODO check if message is longer than tx buffer size */
-                CBufferPopMultiple(&spiTxSlow, length, &txBuffer[8]);
+                cbufferPopMultiple(&spiTxSlow, length, &txBuffer[8]);
                 txMessageAvailable = TRUE;
             } else { // nothing available try again in a few miliseconds
                 xSemaphoreGive(spiTxAvailable);
@@ -284,9 +284,9 @@ static inline void parseSpiRxByte(uint8_t data) {
 /* ----------------------------------------- TX buffer handling */
 uint8_t spiTxPush(uint8_t length, uint8_t * message) {
     /*add message to circular buffer if there is enough space*/
-    if (CBufferFree(&spiTxSlow) > (length + 1)) {
-        CBufferPush(&spiTxSlow, length);
-        CBufferPushMultiple(&spiTxSlow, length, message);
+    if (cbufferFree(&spiTxSlow) > (length + 1)) {
+        cbufferPush(&spiTxSlow, length);
+        cbufferPushMultiple(&spiTxSlow, length, message);
     } else { // not enough space
         return 1;
     }
