@@ -269,7 +269,7 @@ static inline void parseSpiRxByte(uint8_t data) {
             // check if CRC is ok
             // if it is:
             // send to protobuff handler ---> later have a by type dispatcher
-            streamToProtobuf(&message[8], length);
+            cmStreamToProtobuf(&message[8], length);
             state = SPIRX_WAITINGFORPREAMBULE1BYTE;
         } else {
             crc |= (uint64_t) data << ((8 - miscCnt) * 8); /*check big/little endian*/
