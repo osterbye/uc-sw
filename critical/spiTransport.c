@@ -24,8 +24,8 @@ static void initDMASpiTx(void);
 
 static inline void parseSpiRxByte(uint8_t data);
 
-static void setupDMASpiMsgTx(uint32_t length, uint8_t * message);
-static uint64_t crcDMACalculate (uint8_t length, uint8_t * message);
+static void setupDMASpiMsgTx(uint32_t length, const uint8_t * message);
+static uint64_t crcDMACalculate (uint8_t length, const uint8_t * message);
 
 #define SPIRXMESSAGENRMAX 100
 #define SPIRXMESSAGELENMAX 100
@@ -67,18 +67,6 @@ cbuffer_t spiTxSlow = {
     .tail = 0,
     .data = spiTxSlowBuffer
 };
-
-static void toHex(char * dst, const uint8_t * src, unsigned length) {
-    *dst = '\0'; /* in case length is 0 */
-    while (length) {
-        snprintf(dst, 4, "%02X ", *src);
-        dst += 3;
-        src++;
-        length--;
-    }
-}
-
-char buf[0x100 * 4];
 
 void taskSpiTx(void *pvParameters) {
     uint8_t txBuffer[SPITXBUFFERSIZE] = {0};
@@ -146,8 +134,8 @@ void taskSpiTx(void *pvParameters) {
                 /*send the message*/
 
                 //LOG_INFO("Starting transmission");
-                toHex(buf, txBuffer, length);
-                LOG_INFO("SPI TX: %s", buf);
+                loggingToHex(loggingStr, txBuffer, length);
+                LOG_INFO("SPI TX: %s", loggingStr);
                 gioSetBit(gioPORTB, 1, 1); // set request to transmitt to active
                 setupDMASpiMsgTx(length, txBuffer);
             }
@@ -282,7 +270,7 @@ static inline void parseSpiRxByte(uint8_t data) {
 }
 
 /* ----------------------------------------- TX buffer handling */
-uint8_t spiTxPush(uint8_t length, uint8_t * message) {
+uint8_t spiTxPush(uint8_t length, const uint8_t * message) {
     /*add message to circular buffer if there is enough space*/
     if (cbufferFree(&spiTxSlow) > (length + 1)) {
         cbufferPush(&spiTxSlow, length);
@@ -293,7 +281,7 @@ uint8_t spiTxPush(uint8_t length, uint8_t * message) {
     return 0;
 }
 
-uint8_t spiSendPriority(uint8_t length, uint8_t * message) {
+uint8_t spiSendPriority(uint8_t length, const uint8_t * message) {
     uint8_t i = 0;
 
     for (i = 0; i < SPITXFASTNR; i++) {
@@ -363,7 +351,7 @@ static void initDMASpiRx(void) {
     dmaSetChEnable(DMA_CH0, DMA_HW);
 }
 
-static void setupDMASpiMsgTx(uint32_t length, uint8_t * message) {
+static void setupDMASpiMsgTx(uint32_t length, const uint8_t * message) {
     g_dmaCTRL xDmaSetup;         /* dma control packet configuration stack - Transmit Channels*/
 
     xDmaSetup.SADD      = (uint32)message + 1;          /* source address */
@@ -390,7 +378,7 @@ static void setupDMASpiMsgTx(uint32_t length, uint8_t * message) {
     spiREG3->DAT0 = (uint32) * message;
 }
 
-static uint64_t crcDMACalculate (uint8_t length, uint8_t * message) {
+static uint64_t crcDMACalculate (uint8_t length, const uint8_t * message) {
     uint64_t crc = 0;
     g_dmaCTRL xDmaSetup;         /* dma control packet configuration stack */
 

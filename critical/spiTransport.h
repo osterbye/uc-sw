@@ -22,8 +22,8 @@
 void taskSpiRx (void *pvParameters);
 void taskSpiTx (void *pvParameters);
 
-uint8_t spiTxPush(uint8_t length, uint8_t * message);
-uint8_t spiTxPushUrgent(uint8_t length, uint8_t * message);
+uint8_t spiTxPush(uint8_t length, const uint8_t * message);
+uint8_t spiTxPushUrgent(uint8_t length, const uint8_t * message);
 uint8_t * spiRxPopUrgent(void);
 uint8_t spiAckUrgent(uint8_t location);
 

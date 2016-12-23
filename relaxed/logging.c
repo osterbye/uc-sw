@@ -8,6 +8,7 @@
 #include "logging.h"
 
 char loggingBuffer[LOGGING_BUFFER_LENGTH] = {0};
+char loggingStr[LOGGING_BUFFER_LENGTH] = {0};
 
 void loggingInit() {
     sciInit();
@@ -17,3 +18,12 @@ void loggingInit() {
     LOG_INFO("Logging module initialized");
 }
 
+void loggingToHex(char * dst, const uint8_t * src, unsigned length) {
+    *dst = '\0'; /* in case length is 0 */
+    while (length) {
+        snprintf(dst, 4, "%02X ", *src);
+        dst += 3;
+        src++;
+        length--;
+    }
+}

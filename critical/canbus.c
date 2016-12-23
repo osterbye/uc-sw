@@ -127,16 +127,6 @@ uint8_t canGetEoB(const CanMessage_t * msg) {
     return (msg->mctl >> 7) & 1U; /* End of Block flag */
 }
 
-static void toHexString(char * dst, const uint8_t * src, unsigned length) {
-	*dst = '\0'; /* in case length is 0 */
-    while (length) {
-        snprintf(dst, 4, "%02X ", *src);
-        dst += 3;
-        src++;
-        length--;
-    }
-}
-
 static void canbusSendMessage(enum canInterfaces interface, uint32_t canID, uint8_t dlc, const uint8_t * pdu) {
     uint32_t success;
     canBASE_t * canBase;
@@ -176,9 +166,6 @@ CanbusMessageHandler_t handlers[] = {
 
 static void handleReceivedMessages() {
     int i;
-#if (CANBUS_RX_DUMP == ON)
-    char hexMsg[8*3 + 1];
-#endif
     const int handlersCount = sizeof(handlers) / sizeof(CanbusMessageHandler_t);
     if (uReadIndex != uWriteIndex) { /* new messages pending */
         /* execute all handlers with same ID */
@@ -188,9 +175,9 @@ static void handleReceivedMessages() {
             }
         }
 #if (CANBUS_RX_DUMP == ON)
-        toHexString(hexMsg, &(xReceiveBuffer[uReadIndex].pdu), canGetDLC(&xReceiveBuffer[uReadIndex]));
+        loggingToHex(loggingStr, &(xReceiveBuffer[uReadIndex].pdu), canGetDLC(&xReceiveBuffer[uReadIndex]));
 #endif
-        LOG_DEBUG("%03X: %s", xReceiveBuffer[uReadIndex].id, hexMsg);
+        LOG_DEBUG("%03X: %s", xReceiveBuffer[uReadIndex].id, loggingStr);
         uReadIndex = (uReadIndex + 1) % canRECEIVE_BUFFER_SIZE;
     }
 }

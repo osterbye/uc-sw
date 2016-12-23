@@ -96,7 +96,7 @@ void vSeatSensors(void *pvParameters) {
 		any[2] = Get_seatOccupiedRL();
 		Set_seatOccupiedRR(gioGetBit(hetPORT1, 19));
 		any[3] = Get_seatOccupiedRR();
-		LOG_INFO("seats: %d %d %d %d\n", any[0], any[1], any[2], any[3]);
+		LOG_DEBUG("seats: %d %d %d %d", any[0], any[1], any[2], any[3]);
 	    vTaskDelay(200 / portTICK_PERIOD_MS);
 	}
 }
