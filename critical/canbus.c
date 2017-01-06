@@ -157,12 +157,22 @@ static void canbusSendMessage(enum canInterfaces interface, uint32_t canID, uint
 
 #include "globalState.h"
 
-/* Example CAN bus message handler for ID 0x351,
-   vehicle speed in bytes 2 and 3 to be divided by 192 */
-static void handlerVehicleSpeed(const CanMessage_t * msg) {
-    uint16_t canSpeed = msg->pdu[2] + ((uint16_t) msg->pdu[3] << 8);
-    float speed = canSpeed / 192;
-    Set_fSpeedMPH(speed);
+static void receiveBlinkerLights(const CanMessage_t * msg) {
+    uint8_t blinkerByte = msg->pdu[CBO(0)];
+    Set_blinkerLeft( blinkerByte & (1u << 0) != 0);
+    Set_blinkerRight(blinkerByte & (1u << 1) != 0);
+}
+
+static void receiveDoorsOpen(const CanMessage_t * msg) {
+    uint8_t doorByte = msg->pdu[CBO(1)];
+    Set_doorOpenFL((doorByte & (1u << 0)) != 0);
+    Set_doorOpenFR((doorByte & (1u << 1)) != 0);
+    Set_doorOpenRL((doorByte & (1u << 2)) != 0);
+    Set_doorOpenRR((doorByte & (1u << 3)) != 0);
+}
+
+static void receiveVehicleLocked(const CanMessage_t * msg) {
+    Set_vehicleLocked(msg->pdu[CBO(0)] == 2u);
 }
 
 typedef struct {
@@ -171,42 +181,50 @@ typedef struct {
 } CanbusMessageHandler_t;
 
 CanbusMessageHandler_t handlers[] = {
-    {0x351, handlerVehicleSpeed},
+    {0x4b9, receiveVehicleLocked},
+    {0x470, receiveDoorsOpen},
+    {0x470, receiveBlinkerLights},
 };
 
-static void handleReceivedMessages() {
+/**
+ * Dispatches CAN message to registered CAN handlers with same ID as message
+ * @param msg pointer to CAN message
+ */
+static void dispatchToHandler(const CanMessage_t * msg) {
     int i;
+    const int handlersCount = sizeof(handlers) / sizeof(CanbusMessageHandler_t);
+    for (i = 0; i < handlersCount; i++) {
+        if (msg->id == handlers[i].id) {
+            handlers[i].handlerFunction(msg);
+        }
+    }
+}
+
+/**
+ * Checks for new CAN messages and dispatches message to processing
+ */
+static void handleReceivedMessages() {
 #if (CANBUS_RX_DUMP == ON)
     char hexMsg[8*3 + 1];
 #endif
-    const int handlersCount = sizeof(handlers) / sizeof(CanbusMessageHandler_t);
     if (uReadIndex != uWriteIndex) { /* new messages pending */
-        /* execute all handlers with same ID */
-        for (i = 0; i < handlersCount; i++) {
-            if (xReceiveBuffer[uReadIndex].id == handlers[i].id) {
-                handlers[i].handlerFunction(&xReceiveBuffer[uReadIndex]); 
-            }
-        }
+        dispatchToHandler(&xReceiveBuffer[uReadIndex]);
 #if (CANBUS_RX_DUMP == ON)
         toHexString(hexMsg, &(xReceiveBuffer[uReadIndex].pdu), canGetDLC(&xReceiveBuffer[uReadIndex]));
-#endif
         LOG_DEBUG("%03X: %s", xReceiveBuffer[uReadIndex].id, hexMsg);
+#endif
         uReadIndex = (uReadIndex + 1) % canRECEIVE_BUFFER_SIZE;
     }
 }
 
-uint8_t tx_data[16] = {0,1,2,3,4,5,6,7,8,9};
-
-// CBO macro turns LE data into BE data index:
-// 0 1 2 3 4 5 6 7  ->  3 2 1 0 7 6 5 4
-#define CBO(x)   s_canByteOrder[x]
-
 void canbusTask(void *pvParameters) {
-    uint16_t counter = 0x660;
+    //uint8_t tx_data[16] = {0,1,2,3,4,5,6,7,8,9};
+    //uint16_t counter = 0x660;
 
     while(1){
-    	counter++;
-        /*tx_data[2] = 0x12 + counter;
+        /*
+        counter++;
+        tx_data[2] = 0x12 + counter;
         tx_data[3] = 0x34;
         tx_data[6] = '0' + (counter++ % 10);*/
         //canbusSendMessage(canBusNum, counter, 8, tx_data); // + (counter % 3)

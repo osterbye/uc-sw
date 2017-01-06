@@ -30,6 +30,10 @@ typedef struct {
     uint8_t  pdu[8];    /* actual payload of CAN message */
 } CanMessage_t;
 
+// turn LE data into BE data index: 0 1 2 3 4 5 6 7  ->  3 2 1 0 7 6 5 4
+// used when accessing CAN messages because they are presented in BE order which is not what we expect
+#define CBO(x)  (3 - x + (x / 4) * 8)
+
 void canbusInit();
 void canbusDmaNotification(dmaInterrupt_t inttype, uint32 channel);
 void canbusTask(void *pvParameters);
