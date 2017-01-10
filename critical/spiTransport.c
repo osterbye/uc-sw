@@ -68,6 +68,11 @@ cbuffer_t spiTxSlow = {
     .data = spiTxSlowBuffer
 };
 
+/**
+ * Turns the crank on the sending of the SPI messages to the Computation Module.
+ * If there are any messages in the urgent queue they are sent first.
+ * If there aren't any, messages from the circular buffer are sent.
+ */
 void taskSpiTx(void *pvParameters) {
     uint8_t txBuffer[SPITXBUFFERSIZE] = {0};
     LOG_INFO("Entering SPI TX task ");
@@ -89,7 +94,7 @@ void taskSpiTx(void *pvParameters) {
 
             uint8_t type = 1;
 
-            fastMessage = spiRxPopUrgent();
+            fastMessage = spiTxPopUrgent();
             if (NULL != fastMessage) {
                 length = SPITXFASTMESSAGESIZEMAX;
                 memcpy(&txBuffer[8], fastMessage, length);
@@ -144,7 +149,9 @@ void taskSpiTx(void *pvParameters) {
 }
 
 
-
+/**
+ * Turns the crank of the receiving of SPI messages from the Computation Module
+ */
 void taskSpiRx(void *pvParameters) {
     uint8_t i = 0;
     /* rx variables */
@@ -190,7 +197,10 @@ void taskSpiRx(void *pvParameters) {
     }
 }
 
-
+/**
+ * Parses the incomming stream and outputs messages
+ * @param data next byte of incomming stream
+ */
 static inline void parseSpiRxByte(uint8_t data) {
     static spiRxSM_t state = SPIRX_WAITINGFORPREAMBULE1BYTE;
     static uint8_t miscCnt = 0;
@@ -281,7 +291,7 @@ uint8_t spiTxPush(uint8_t length, const uint8_t * message) {
     return 0;
 }
 
-uint8_t spiSendPriority(uint8_t length, const uint8_t * message) {
+uint8_t spiTxPushUrgent(uint8_t length, const uint8_t * message) {
     uint8_t i = 0;
 
     for (i = 0; i < SPITXFASTNR; i++) {
@@ -297,12 +307,19 @@ uint8_t spiSendPriority(uint8_t length, const uint8_t * message) {
     return 1;
 }
 
+/**
+ * Marks the message as received ie. the location is empty
+ * @param position of the message in the queue
+ */
 uint8_t spiAckUrgent(uint8_t location) {
     spiTxFast[location].available = 0;
     return 0;
 }
 
-uint8_t * spiRxPopUrgent(void) {
+/**
+ * Retrives first SPI message from the urgent queue
+ */
+uint8_t * spiTxPopUrgent(void) {
     uint8_t i = 0;
 
     for (i = 0; i < SPITXFASTNR; i++) {
@@ -313,14 +330,17 @@ uint8_t * spiRxPopUrgent(void) {
     return NULL;
 }
 
-
-/* ----------------------------------------- DMA setup */
+/**
+ * Sets up the SPI DMA for transmitting
+ */
 static void initDMASpiTx(void) {
     /* - assigning dma request: channel-1 with request line - 15 (SPI3 Transmit DMA Request) */
     dmaReqAssign(DMA_CH1, 15);
     dmaEnableInterrupt(DMA_CH1, BTC);
 }
-
+/**
+ * Sets up the SPI DMA for receiving
+ */
 static void initDMASpiRx(void) {
     g_dmaCTRL xDmaSetup;         /* dma control packet configuration stack - Transmit Channels*/
 
@@ -351,6 +371,11 @@ static void initDMASpiRx(void) {
     dmaSetChEnable(DMA_CH0, DMA_HW);
 }
 
+/**
+ * Sets up SPI DMA for sending
+ * @param length length of the message
+ * @param message points to the message data to be sent
+ */
 static void setupDMASpiMsgTx(uint32_t length, const uint8_t * message) {
     g_dmaCTRL xDmaSetup;         /* dma control packet configuration stack - Transmit Channels*/
 
@@ -378,6 +403,11 @@ static void setupDMASpiMsgTx(uint32_t length, const uint8_t * message) {
     spiREG3->DAT0 = (uint32) * message;
 }
 
+/**
+ * Calculates crc of the data
+ * @param length lenght of data for which CRC is to be calculated. Length to be devisible by eight.
+ * @param message points to the data for which CRC is to be calculated.
+ */
 static uint64_t crcDMACalculate (uint8_t length, const uint8_t * message) {
     uint64_t crc = 0;
     g_dmaCTRL xDmaSetup;         /* dma control packet configuration stack */
