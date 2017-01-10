@@ -11,7 +11,7 @@
 
 #define CANRECEIVEBUFFERSIZE 20
 
-CanMessage_t xReceiveBuffer[CANRECEIVEBUFFERSIZE]; /* used as circular buffer */
+canMessage_t xReceiveBuffer[CANRECEIVEBUFFERSIZE]; /* used as circular buffer */
 static uint16_t writeIndex = 0;
 static uint16_t readIndex  = 0;
 
@@ -24,7 +24,7 @@ static inline uint32_t extractID(uint32_t arb) {
         return (arb >> 18) & ((1 << 11) - 1); /* bits [28:18], right-shifted by 18 */
 }
 
-static void setupCanInterface(enum canInterfaces interface, const CanMessage_t * circularBuffer) {
+static void setupCanInterface(enum canInterfaces interface, const canMessage_t * circularBuffer) {
     g_dmaCTRL dmaConfig;
     canBASE_t * canBase;
     enum dmaCHANNEL dmaChannel;
@@ -111,7 +111,7 @@ void canbusDmaNotification(dmaInterrupt_t inttype, uint32 channel) {
 
     /* calculate the destination address for next message and update DMA unit */
     writeIndex = (writeIndex + 1) % CANRECEIVEBUFFERSIZE;
-    CanMessage_t * dest = &xReceiveBuffer[0] + (writeIndex);
+    canMessage_t * dest = &xReceiveBuffer[0] + (writeIndex);
     /* Instead of using dmaSetCtrlPacket() to change single register, it is done
      * more efficiently by directly changing the IDADDR in control packet */
     dmaRAMREG->PCP[DMA_CH13].IDADDR = (uint32) dest;
@@ -119,11 +119,11 @@ void canbusDmaNotification(dmaInterrupt_t inttype, uint32 channel) {
     dmaRAMREG->PCP[DMA_CH15].IDADDR = (uint32) dest;
 }
 
-uint8_t canGetDLC(const CanMessage_t * msg) {
+uint8_t canGetDLC(const canMessage_t * msg) {
     return msg->mctl & 0b1111; /* extract lowest four bits from MCTL, they contain DLC */
 }
 
-uint8_t canGetEoB(const CanMessage_t * msg) {
+uint8_t canGetEoB(const canMessage_t * msg) {
     return (msg->mctl >> 7) & 1U; /* End of Block flag */
 }
 
@@ -159,7 +159,7 @@ static void canbusSendMessage(enum canInterfaces interface, uint32_t canID, uint
 
 /* Example CAN bus message handler for ID 0x351,
    vehicle speed in bytes 2 and 3 to be divided by 192 */
-static void handlerVehicleSpeed(const CanMessage_t * msg) {
+static void handlerVehicleSpeed(const canMessage_t * msg) {
     uint16_t canSpeed = msg->pdu[2] + ((uint16_t) msg->pdu[3] << 8);
     float speed = canSpeed / 192;
     Set_fSpeedMPH(speed);
@@ -167,7 +167,7 @@ static void handlerVehicleSpeed(const CanMessage_t * msg) {
 
 typedef struct {
     uint32_t id;
-    void (* handlerFunction)(const CanMessage_t *);
+    void (* handlerFunction)(const canMessage_t *);
 } CanbusMessageHandler_t;
 
 CanbusMessageHandler_t handlers[] = {
