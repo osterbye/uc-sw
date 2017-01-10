@@ -2,10 +2,14 @@
 #define CANBUS_H
 
 #include <stdint.h>
+#include "sys_dma.h"
 
+// CAN bus configuration
 #define CANBUS_INTERFACE_CAN1   ON
 #define CANBUS_INTERFACE_CAN2   ON
 #define CANBUS_INTERFACE_CAN3   ON
+
+#define CANBUS_RECEIVE_BUFFER_SIZE 20
 
 /* testing/debugging helpers */
 #define CANBUS_LOOPBACK      OFF
@@ -29,6 +33,15 @@ typedef struct {
     uint32_t mctl;      /* message control register with various flags describing message */
     uint8_t  pdu[8];    /* actual payload of CAN message */
 } canMessage_t;
+
+typedef struct {
+  uint32_t id;
+  void (* handlerFunction)(const canMessage_t *);
+} canbusMessageHandler_t;
+
+// CBO macro turns LE data into BE data index:
+// 0 1 2 3 4 5 6 7  ->  3 2 1 0 7 6 5 4
+#define CBO(x)   (3 - x + (x / 4) * 8)
 
 void canbusInit();
 void canbusDmaNotification(dmaInterrupt_t inttype, uint32 channel);

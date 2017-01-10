@@ -1,6 +1,5 @@
 /* Halcogen includes */
 #include "can.h"
-#include "sys_dma.h"
 
 /* FreeRTOS includes */
 #include "FreeRTOS.h"
@@ -9,19 +8,18 @@
 #include "canbus.h"
 #include "logging.h"
 
-#define CANRECEIVEBUFFERSIZE 20
-
-canMessage_t xReceiveBuffer[CANRECEIVEBUFFERSIZE]; /* used as circular buffer */
+canMessage_t xReceiveBuffer[CANBUS_RECEIVE_BUFFER_SIZE]; /* used as circular buffer */
 static uint16_t writeIndex = 0;
 static uint16_t readIndex  = 0;
 
 static bool canbusIsMessageLost = false;
 
 static inline uint32_t extractID(uint32_t arb) {
-    if (arb & (1 << 29))                      /* standard/extended identifier in flag [30] */
+    if (arb & (1 << 29)) {                    /* standard/extended identifier in flag [30] */
         return arb & ((1 << 29) - 1);         /* bits [28:0] */
-    else
+    } else {
         return (arb >> 18) & ((1 << 11) - 1); /* bits [28:18], right-shifted by 18 */
+    }
 }
 
 static void setupCanInterface(enum canInterfaces interface, const canMessage_t * circularBuffer) {
@@ -34,18 +32,15 @@ static void setupCanInterface(enum canInterfaces interface, const canMessage_t *
         canBase = canREG1;
         dmaChannel = DMA_CH13;
         requestLine = DCAN1_IF3_DMAREQ;
-    }
-    else if (interface == CANBUS2) {
+    } else if (interface == CANBUS2) {
         canBase = canREG2;
         dmaChannel = DMA_CH14;
         requestLine = DCAN2_IF3_DMAREQ;
-    }
-    else if (interface == CANBUS3) {
+    } else if (interface == CANBUS3) {
         canBase = canREG3;
         dmaChannel = DMA_CH15;
         requestLine = DCAN3_IF3_DMAREQ;
-    }
-    else {
+    } else {
         LOG_WARN("Invalid CAN interface %d", interface);
         return;
     }
@@ -53,6 +48,7 @@ static void setupCanInterface(enum canInterfaces interface, const canMessage_t *
 #if (CANBUS_LOOPBACK == ON)
     canEnableloopback(canBase, External_Lbk);
 #endif
+
     /* Update Enable for message for first 63 message objects (mailboxes) for receiving */
     /* If CAN IDs need to be ignored, they should be put to first mailboxes and their flags
        removed from Update Enabled register */
@@ -110,7 +106,7 @@ void canbusDmaNotification(dmaInterrupt_t inttype, uint32 channel) {
     canbusIsMessageLost |= (xReceiveBuffer[writeIndex].mctl >> 14) & 1U;
 
     /* calculate the destination address for next message and update DMA unit */
-    writeIndex = (writeIndex + 1) % CANRECEIVEBUFFERSIZE;
+    writeIndex = (writeIndex + 1) % CANBUS_RECEIVE_BUFFER_SIZE;
     canMessage_t * dest = &xReceiveBuffer[0] + (writeIndex);
     /* Instead of using dmaSetCtrlPacket() to change single register, it is done
      * more efficiently by directly changing the IDADDR in control packet */
@@ -122,22 +118,26 @@ void canbusDmaNotification(dmaInterrupt_t inttype, uint32 channel) {
 uint8_t canGetDLC(const canMessage_t * msg) {
     return msg->mctl & 0b1111; /* extract lowest four bits from MCTL, they contain DLC */
 }
-
+/**
+ * Fetches the End of Block flag
+ */
 uint8_t canGetEoB(const canMessage_t * msg) {
-    return (msg->mctl >> 7) & 1U; /* End of Block flag */
+    return (msg->mctl >> 7) & 1U;
 }
 
 static void canbusSendMessage(enum canInterfaces interface, uint32_t canID, uint8_t dlc, const uint8_t * pdu) {
     uint32_t success;
     canBASE_t * canBase;
-    if (interface == CANBUS1)
+    if (interface == CANBUS1){
         canBase = canREG1;
-    else if (interface == CANBUS2)
+    } else if (interface == CANBUS2) {
         canBase = canREG2;
-    else if (interface == CANBUS3)
+    } else if (interface == CANBUS3) {
         canBase = canREG3;
-    else
+    } else {
         LOG_WARN("Invalid CAN interface %d", interface);
+        return;
+    }
     /* TODO: extended identifier can be supported by flag 1 << 30 */
     canUpdateID(canBase, canMESSAGE_BOX64, canID << 18 | (1 << 29));
     success = canTransmit(canBase, canMESSAGE_BOX64, pdu);
@@ -145,51 +145,47 @@ static void canbusSendMessage(enum canInterfaces interface, uint32_t canID, uint
         LOG_WARN("CAN message not sent (another message already pending?)");
 }
 
-#include "globalState.h"
-
-/* Example CAN bus message handler for ID 0x351,
-   vehicle speed in bytes 2 and 3 to be divided by 192 */
-static void handlerVehicleSpeed(const canMessage_t * msg) {
-    uint16_t canSpeed = msg->pdu[2] + ((uint16_t) msg->pdu[3] << 8);
-    float speed = canSpeed / 192;
-    Set_fSpeedMPH(speed);
-}
-
-typedef struct {
-    uint32_t id;
-    void (* handlerFunction)(const canMessage_t *);
-} CanbusMessageHandler_t;
-
-CanbusMessageHandler_t handlers[] = {
-    {0x351, handlerVehicleSpeed},
+// CAN handlers configuration
+#include "subsystems/Comfort.h"
+#include "subsystems/Lights.h"
+canbusMessageHandler_t handlers[] = {
+    {0x4b9, canbusRxVehicleLocked},
+    {0x470, canbusRxDoorsOpen},
+    {0x470, canbusRxBlinkerLights},
 };
 
-static void handleReceivedMessages() {
+/**
+ * Dispatches CAN message to registered CAN handlers with same ID as incomming message
+ * @param msg pointer to CAN message
+ */
+static void dispatchToHandler(const canMessage_t * msg) {
     int i;
-    const int handlersCount = sizeof(handlers) / sizeof(CanbusMessageHandler_t);
-    if (readIndex != writeIndex) { /* new messages pending */
-        /* execute all handlers with same ID */
-        for (i = 0; i < handlersCount; i++) {
-            if (xReceiveBuffer[readIndex].id == handlers[i].id) {
-                handlers[i].handlerFunction(&xReceiveBuffer[readIndex]); 
-            }
+    const int handlersCount = sizeof(handlers) / sizeof(canbusMessageHandler_t);
+    /* execute all handlers with same ID */
+    for (i = 0; i < handlersCount; i++) {
+        if (msg->id == handlers[i].id) {
+            handlers[i].handlerFunction(msg);
         }
+    }
+}
+
+
+static void handleReceivedMessages() {
+    if (readIndex != writeIndex) { /* new messages pending */
+    	dispatchToHandler(&xReceiveBuffer[readIndex]);
 #if (CANBUS_RX_DUMP == ON)
         loggingToHex(loggingStr, &(xReceiveBuffer[readIndex].pdu), canGetDLC(&xReceiveBuffer[readIndex]));
 #endif
         LOG_DEBUG("%03X: %s", xReceiveBuffer[readIndex].id, loggingStr);
-        readIndex = (readIndex + 1) % CANRECEIVEBUFFERSIZE;
+        readIndex = (readIndex + 1) % CANBUS_RECEIVE_BUFFER_SIZE;
     }
 }
-
-uint8_t tx_data[16] = {0,1,2,3,4,5,6,7,8,9};
-
-// CBO macro turns LE data into BE data index:
-// 0 1 2 3 4 5 6 7  ->  3 2 1 0 7 6 5 4
-#define CBO(x)   s_canByteOrder[x]
-
+/**
+ * Turns the crank for handling incomming and outgoing can messages
+ */
 void canbusTask(void *pvParameters) {
     uint16_t counter = 0x660;
+    uint8_t tx_data[16] = {0,1,2,3,4,5,6,7,8,9};
 
     while(1){
     	counter++;
