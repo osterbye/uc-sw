@@ -25,12 +25,11 @@
 #include "cmCommunication.h"
 #include "spiTransport.h"
 #include "canbus.h"
-#include "het.h"
+#include "subsystems/Comfort.h"
 
 #include "doorlock.h"
 
 void HeartbeatTask (void *pvParameters);
-void SeatSensorsTask(void *pvParameters);
 
 void vApplicationMallocFailedHook( void ) {
 	LOG_CRITICAL("Application malloc failed, bigger heap needed?");
@@ -61,7 +60,7 @@ void main(void){
   task_create(taskSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(taskSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(taskCmSendStatus, "SENDSTATUS", 800, NULL, 2, NULL);
-  task_create(SeatSensorsTask, "SEATSENSORS", 400, NULL, 2, NULL);
+  task_create(taskSeatSensors, "SEATSENSORS", 400, NULL, 2, NULL);
   task_create(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(doorlockTask,  "DOORLOCK", 100, NULL, 2, NULL);
   //task_create(taskCmCommandExecutionTest, "COMMANDTEST", 100, NULL, 3, NULL);
@@ -78,25 +77,13 @@ void main(void){
   while (1);
 }
 
+/**
+ * Blinks a LED to indicate funcitoning of the RTOS
+ */
 void HeartbeatTask(void *pvParameters) {
-  while(1){
-    gioToggleBit(gioPORTB, 1);
-    vTaskDelay(500 / portTICK_PERIOD_MS);
-  }
-}
-
-void SeatSensorsTask(void *pvParameters) {
-	while(1) {
-		uint8_t any[4] = {0};
-		Set_seatOccupiedFL(gioGetBit(hetPORT1, 15));
-		any[0] = Get_seatOccupiedFL();
-		Set_seatOccupiedFR(gioGetBit(hetPORT1, 13));
-		any[1] = Get_seatOccupiedFR();
-		Set_seatOccupiedRL(gioGetBit(hetPORT1, 6));
-		any[2] = Get_seatOccupiedRL();
-		Set_seatOccupiedRR(gioGetBit(hetPORT1, 19));
-		any[3] = Get_seatOccupiedRR();
-		LOG_DEBUG("seats: %d %d %d %d", any[0], any[1], any[2], any[3]);
-	    vTaskDelay(200 / portTICK_PERIOD_MS);
+	while(1){
+		gioToggleBit(gioPORTB, 1);
+		vTaskDelay(500 / portTICK_PERIOD_MS);
 	}
 }
+

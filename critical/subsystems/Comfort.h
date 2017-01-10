@@ -12,5 +12,6 @@
 
 void canbusRxDoorsOpen(const canMessage_t * msg);
 void canbusRxVehicleLocked(const canMessage_t * msg);
+void taskSeatSensors(void *pvParameters);
 
 #endif /* CRITICAL_SUBSYSTEMS_COMFORT_H_ */
