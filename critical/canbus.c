@@ -50,7 +50,7 @@ static void setupCanInterface(enum canInterfaces interface, const CanMessage_t *
         return;
     }
 
-#if (CANBUS_LOOPBACK == ON)
+#if (CANBUS_LOOPBACK == 1)
     canEnableloopback(canBase, External_Lbk);
 #endif
     /* Update Enable for message for first 63 message objects (mailboxes) for receiving */
@@ -88,13 +88,13 @@ static void setupCanInterface(enum canInterfaces interface, const CanMessage_t *
 
 void canbusInit() {
     canInit();
-#if (CANBUS_INTERFACE_CAN1 == ON)
+#if (CANBUS_INTERFACE_CAN1 == 1)
     setupCanInterface(CANBUS1, &xReceiveBuffer[0]);
 #endif
-#if (CANBUS_INTERFACE_CAN2 == ON)
+#if (CANBUS_INTERFACE_CAN2 == 1)
     setupCanInterface(CANBUS2, &xReceiveBuffer[0]);
 #endif
-#if (CANBUS_INTERFACE_CAN3 == ON)
+#if (CANBUS_INTERFACE_CAN3 == 1)
     setupCanInterface(CANBUS3, &xReceiveBuffer[0]);
     /* Demonstration of ignoring specific CAN id (0x666) - in HALCoGen, the first mailbox is set to
        receive specific ID, and that mailbox is now configured not to trigger IF3 automatic update */
@@ -204,12 +204,12 @@ static void dispatchToHandler(const CanMessage_t * msg) {
  * Checks for new CAN messages and dispatches message to processing
  */
 static void handleReceivedMessages() {
-#if (CANBUS_RX_DUMP == ON)
+#if (CANBUS_RX_DUMP == 1)
     char hexMsg[8*3 + 1];
 #endif
     if (uReadIndex != uWriteIndex) { /* new messages pending */
         dispatchToHandler(&xReceiveBuffer[uReadIndex]);
-#if (CANBUS_RX_DUMP == ON)
+#if (CANBUS_RX_DUMP == 1)
         toHexString(hexMsg, &(xReceiveBuffer[uReadIndex].pdu), canGetDLC(&xReceiveBuffer[uReadIndex]));
         LOG_DEBUG("%03X: %s", xReceiveBuffer[uReadIndex].id, hexMsg);
 #endif

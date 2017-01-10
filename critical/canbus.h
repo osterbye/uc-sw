@@ -3,13 +3,13 @@
 
 #include <stdint.h>
 
-#define CANBUS_INTERFACE_CAN1   ON
-#define CANBUS_INTERFACE_CAN2   ON
-#define CANBUS_INTERFACE_CAN3   ON
+#define CANBUS_INTERFACE_CAN1   1
+#define CANBUS_INTERFACE_CAN2   1
+#define CANBUS_INTERFACE_CAN3   1
 
 /* testing/debugging helpers */
-#define CANBUS_LOOPBACK      OFF
-#define CANBUS_RX_DUMP       ON
+#define CANBUS_LOOPBACK      0
+#define CANBUS_RX_DUMP       1
 
 enum canInterfaces {
     CANBUS1 = 1,
