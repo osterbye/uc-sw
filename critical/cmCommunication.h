@@ -10,7 +10,7 @@
 
 /* FreeRTOS tasks */
 void taskCmSendStatus (void *pvParameters);
-void taskCmCommandExecution(void *pvParameters);
+void taskCmCommandExecutionTest(void *pvParameters);
 
 void cmStreamToProtobuf(uint8_t * message, uint16_t length);
 
