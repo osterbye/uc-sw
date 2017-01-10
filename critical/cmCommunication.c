@@ -24,6 +24,7 @@
 #include "cbuffer.h"
 #include "logging.h"
 #include "commandExecution.h"
+#include "spiTransport.h"
 
 static void commandDispatch(const CommandRequest * request);
 
