@@ -58,9 +58,9 @@ void main(void){
   
   LOG_INFO("Creating tasks");
   task_create(HeartbeatTask, "HEARTBEAT", 400, NULL, 2, NULL);
-  task_create(vSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
-  task_create(vSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
-  task_create(sendStatusTask, "SENDSTATUS", 800, NULL, 2, NULL);
+  task_create(taskSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
+  task_create(taskSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
+  task_create(taskCmSendStatus, "SENDSTATUS", 800, NULL, 2, NULL);
   task_create(SeatSensorsTask, "SEATSENSORS", 400, NULL, 2, NULL);
   task_create(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(doorlockTask,  "DOORLOCK", 100, NULL, 2, NULL);
@@ -96,7 +96,7 @@ void SeatSensorsTask(void *pvParameters) {
 		any[2] = Get_seatOccupiedRL();
 		Set_seatOccupiedRR(gioGetBit(hetPORT1, 19));
 		any[3] = Get_seatOccupiedRR();
-		LOG_INFO("seats: %d %d %d %d\n", any[0], any[1], any[2], any[3]);
+		LOG_DEBUG("seats: %d %d %d %d", any[0], any[1], any[2], any[3]);
 	    vTaskDelay(200 / portTICK_PERIOD_MS);
 	}
 }

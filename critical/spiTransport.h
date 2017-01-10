@@ -16,35 +16,18 @@
 #include "os_queue.h"
 #include "os_semphr.h"
 
-/* FreeRTOS tasks */
-void vSpiRx (void *pvParameters);
-void vSpiTx (void *pvParameters);
-
-
-
 #include "cmCommunication.h"
 
-uint8_t ackSPITxFast(uint8_t location);
-uint8_t addToSPITxFast(uint8_t length, uint8_t * message);
-uint8_t addToSPITxSlow(uint8_t length, uint8_t * message);
-uint8_t * getFromSPITxFast(void);
+/* FreeRTOS tasks */
+void taskSpiRx (void *pvParameters);
+void taskSpiTx (void *pvParameters);
 
-typedef enum{
-	SPIRX_WAITINGFORPREAMBULE1BYTE, /*0xAA*/
-	SPIRX_WAITINGFORPREAMBULE2BYTE, /*0x55*/
-	SPIRX_TYPE,
-	SPIRX_LENGTH,
-	SPIRX_PAYLOAD,
-	SPIRX_CRC,
-} SpiRxSM_t;
+uint8_t spiTxPush(uint8_t length, const uint8_t * message);
+uint8_t spiTxPushUrgent(uint8_t length, const uint8_t * message);
+uint8_t * spiRxPopUrgent(void);
+uint8_t spiAckUrgent(uint8_t location);
 
-extern SemaphoreHandle_t xSpiRxFrameCnt;
-extern SemaphoreHandle_t xSpiTxAvailable;
-
-#define SPIRXMESSAGENRMAX 100
-#define SPIRXMESSAGELENMAX 100
-#define RX_BUFFER_SIZE 128
-#define SPIRXBUFFERSIZE 10
-#define SPITXBUFFERSIZE 128
+extern SemaphoreHandle_t spiRxFrameCount;
+extern SemaphoreHandle_t spiTxAvailable;
 
 #endif /* CRITICAL_SPITRANSPORT_H_ */
