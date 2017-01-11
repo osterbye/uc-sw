@@ -6,6 +6,7 @@
 
 /* Halcogen includes */
 #include "gio.h"
+#include "het.h"
 #include "crc.h"
 #include "spi.h"
 #include "sys_dma.h"
@@ -27,22 +28,10 @@
 #include "canbus.h"
 #include "subsystems/Comfort.h"
 
-#include "doorlock.h"
 
 void HeartbeatTask (void *pvParameters);
-
-void vApplicationMallocFailedHook( void ) {
-	LOG_CRITICAL("Application malloc failed, bigger heap needed?");
-}
-
-void task_create(TaskFunction_t pxTaskCode, const char * const pcName, const uint16_t usStackDepth,
-		void * const pvParameters, UBaseType_t uxPriority, TaskHandle_t * const pxCreatedTask) {
-
-    BaseType_t retval = xTaskCreate(pxTaskCode, pcName, usStackDepth, pvParameters, uxPriority, pxCreatedTask);
-    if (retval != pdPASS) {
-        LOG_CRITICAL("Task %s could not be created, error %d", pcName, retval);
-    }
-}
+void taskCreate(TaskFunction_t pxTaskCode, const char * const pcName, const uint16_t usStackDepth,
+		void * const pvParameters, UBaseType_t uxPriority, TaskHandle_t * const pxCreatedTask);
 
 
 void main(void){
@@ -56,14 +45,15 @@ void main(void){
   spiREG3->INT0 = (spiREG3->INT0 & 0xFFFEFFFFU) | (uint32)((uint32)1U << 16U);  /* ENABLE DMAREQ */
   
   LOG_INFO("Creating tasks");
-  task_create(HeartbeatTask, "HEARTBEAT", 400, NULL, 2, NULL);
-  task_create(taskSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
-  task_create(taskSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
-  task_create(taskCmSendStatus, "SENDSTATUS", 800, NULL, 2, NULL);
-  task_create(taskSeatSensors, "SEATSENSORS", 400, NULL, 2, NULL);
-  task_create(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
-  task_create(doorlockTask,  "DOORLOCK", 100, NULL, 2, NULL);
-  //task_create(taskCmCommandExecutionTest, "COMMANDTEST", 100, NULL, 3, NULL);
+  taskCreate(HeartbeatTask, "HEARTBEAT", 400, NULL, 2, NULL);
+  taskCreate(taskSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
+  taskCreate(taskSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
+  taskCreate(taskCmSendStatus, "SENDSTATUS", 800, NULL, 2, NULL);
+  taskCreate(taskSeatSensors, "SEATSENSORS", 400, NULL, 2, NULL);
+  taskCreate(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
+  taskCreate(doorlockTask,  "DOORLOCK", 100, NULL, 2, NULL);
+  /* tasks for testing parts of the code */
+  //taskCreate(taskCmCommandExecutionTest, "COMMANDTEST", 100, NULL, 3, NULL);
 
   //vTaskStartTrace(&traceBuff[0], 255);
 
@@ -87,3 +77,21 @@ void HeartbeatTask(void *pvParameters) {
 	}
 }
 
+/**
+ * Hook for detecting and logging problems with allocation memory
+ */
+void vApplicationMallocFailedHook(void) {
+	LOG_CRITICAL("Application malloc failed, bigger heap needed?");
+}
+
+/**
+ * Wrapper around xTaskCreate to detect and log problems with creating tasks
+ */
+void taskCreate(TaskFunction_t pxTaskCode, const char * const pcName, const uint16_t usStackDepth,
+		void * const pvParameters, UBaseType_t uxPriority, TaskHandle_t * const pxCreatedTask) {
+
+    BaseType_t retval = xTaskCreate(pxTaskCode, pcName, usStackDepth, pvParameters, uxPriority, pxCreatedTask);
+    if (retval != pdPASS) {
+        LOG_CRITICAL("Task %s could not be created, error %d", pcName, retval);
+    }
+}
