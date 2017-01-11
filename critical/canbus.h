@@ -5,15 +5,15 @@
 #include "sys_dma.h"
 
 // CAN bus configuration
-#define CANBUS_INTERFACE_CAN1   ON
-#define CANBUS_INTERFACE_CAN2   ON
-#define CANBUS_INTERFACE_CAN3   ON
+#define CANBUS_INTERFACE_CAN1_ACTIVE 1
+#define CANBUS_INTERFACE_CAN2_ACTIVE 1
+#define CANBUS_INTERFACE_CAN3_ACTIVE 1
 
 #define CANBUS_RECEIVE_BUFFER_SIZE 20
 
 /* testing/debugging helpers */
-#define CANBUS_LOOPBACK      OFF
-#define CANBUS_RX_DUMP       ON
+#define CANBUS_LOOPBACK_ACTIVE       0
+#define CANBUS_RX_DUMP               1
 
 enum canInterfaces {
     CANBUS1 = 1,
