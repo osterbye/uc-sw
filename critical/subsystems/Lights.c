@@ -14,7 +14,10 @@ void commandExecution_LIGHTS(const CommandRequest * request){
 
 
 }
-
+/**
+ * Parses the incomming can message for blinker light statuses
+ * @param msg incomming can message
+ */
 void canbusRxBlinkerLights(const canMessage_t * msg) {
   uint8_t blinkerByte = msg->pdu[CBO(0)];
   Set_blinkerLeft( blinkerByte & (1u << 0) != 0);
