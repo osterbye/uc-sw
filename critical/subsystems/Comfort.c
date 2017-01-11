@@ -117,3 +117,30 @@ void doorlockTask (void *pvParameters) {
 		}
 	}
 }
+
+/**
+ * Task handling door locking / unlocking
+ * TODO needs testing
+ */
+/*
+void doorlockTask (void *pvParameters) {
+	while(1){
+		switch (requestedDoorState){
+		case (DOOR_UNLOCK):
+		case (DOOR_LOCK):
+			gioSetBit(DOOR_UNLOCK_PORT, DOOR_UNLOCK_NUM, !requestedDoorState);
+			gioSetBit(DOOR_LOCK_PORT, DOOR_LOCK_NUM, requestedDoorState);
+			vTaskDelay(500 / portTICK_PERIOD_MS);
+			requestedDoorState = DOOR_NOREQUEST;
+			break;
+		case (DOOR_NOREQUEST):
+		default:
+			gioSetBit(DOOR_LOCK_PORT, DOOR_LOCK_NUM, 0);
+			gioSetBit(DOOR_UNLOCK_PORT, DOOR_UNLOCK_NUM, 0);
+			vTaskDelay(50 / portTICK_PERIOD_MS);
+			break;
+		}
+	}
+
+}
+*/
