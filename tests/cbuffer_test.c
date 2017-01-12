@@ -8,7 +8,7 @@
 #define SIZE 12
 uint8_t cbuf_data[SIZE] = {0};
 
-CBuffer_t cbuf = {
+cbuffer_t cbuf = {
   .size = SIZE,
   .head = 1,
   .tail = 0,
@@ -31,22 +31,22 @@ TEST_GROUP(FirstTestGroup)
 TEST(FirstTestGroup, MultiplePushPops)
 {
     uint8_t read[5];
-    CBufferError_t result;
-    result = CBufferPushMultiple(&cbuf, 5, pattern);
+    cbufferError_t result;
+    result = cbufferPushMultiple(&cbuf, 5, pattern);
     CHECK_EQUAL(NO_ERROR, result);
-    result = CBufferPushMultiple(&cbuf, 5, pattern);
+    result = cbufferPushMultiple(&cbuf, 5, pattern);
     CHECK_EQUAL(NO_ERROR, result);
-    result = CBufferPushMultiple(&cbuf, 5, pattern);
+    result = cbufferPushMultiple(&cbuf, 5, pattern);
     CHECK_EQUAL(NOT_ENOUGH_SPACE, result);
 
-    result = CBufferPopMultiple(&cbuf, 5, read);
+    result = cbufferPopMultiple(&cbuf, 5, read);
     CHECK_EQUAL(NO_ERROR, result);
     CHECK(memcmp(pattern, read, 5) == 0);
-    result = CBufferPopMultiple(&cbuf, 5, read);
+    result = cbufferPopMultiple(&cbuf, 5, read);
     CHECK_EQUAL(NO_ERROR, result);
     CHECK_EQUAL(0, memcmp(pattern, read, 5));
 
-    result = CBufferPopMultiple(&cbuf, 1, read);
+    result = cbufferPopMultiple(&cbuf, 1, read);
     CHECK_EQUAL(NOT_ENOUGH_DATA, result);
 }
 
@@ -54,17 +54,17 @@ TEST(FirstTestGroup, InterleavedPushPops)
 {
     uint8_t read[5];
 
-    CBufferError_t result;
-    result = CBufferPushMultiple(&cbuf, 2, pattern);
+    cbufferError_t result;
+    result = cbufferPushMultiple(&cbuf, 2, pattern);
     CHECK_EQUAL(NO_ERROR, result);
 
-    result = CBufferPopMultiple(&cbuf, 1, read);
+    result = cbufferPopMultiple(&cbuf, 1, read);
     CHECK_EQUAL(NO_ERROR, result);
 
-    result = CBufferPushMultiple(&cbuf, 3, pattern + 2);
+    result = cbufferPushMultiple(&cbuf, 3, pattern + 2);
     CHECK_EQUAL(NO_ERROR, result);
 
-    result = CBufferPopMultiple(&cbuf, 4, read + 1);
+    result = cbufferPopMultiple(&cbuf, 4, read + 1);
     CHECK_EQUAL(NO_ERROR, result);
     
     CHECK_EQUAL(0, memcmp(pattern, read, 5));
@@ -73,13 +73,13 @@ TEST(FirstTestGroup, InterleavedPushPops)
 TEST(FirstTestGroup, WrappingAround)
 {
     uint8_t read[100*5] = {0x55};
-    CBufferError_t result;
+    cbufferError_t result;
 
     for (int i = 0; i < 100; i++) {
-        result = CBufferPushMultiple(&cbuf, 5, pattern);
+        result = cbufferPushMultiple(&cbuf, 5, pattern);
         CHECK_EQUAL(NO_ERROR, result);
 
-        result = CBufferPopMultiple(&cbuf, 5, read + i * 5);
+        result = cbufferPopMultiple(&cbuf, 5, read + i * 5);
         CHECK_EQUAL(NO_ERROR, result);
     }
     for (int i = 0; i < 100*5; i++) {
@@ -89,23 +89,22 @@ TEST(FirstTestGroup, WrappingAround)
 
 TEST(FirstTestGroup, FreeTaken)
 {
-    uint8_t read[5]
-    ;
-    CBufferError_t result;
-    CHECK_EQUAL(0, CBufferTaken(&cbuf));
-    CHECK_EQUAL(SIZE, CBufferFree(&cbuf));
+    uint8_t read[5];
+    cbufferError_t result;
+    CHECK_EQUAL(0, cbufferTaken(&cbuf));
+    CHECK_EQUAL(SIZE, cbufferFree(&cbuf));
 
-    result = CBufferPushMultiple(&cbuf, 5, pattern);
+    result = cbufferPushMultiple(&cbuf, 5, pattern);
     CHECK_EQUAL(NO_ERROR, result);
 
-    CHECK_EQUAL(5, CBufferTaken(&cbuf));
-    CHECK_EQUAL(SIZE - 5, CBufferFree(&cbuf));
+    CHECK_EQUAL(5, cbufferTaken(&cbuf));
+    CHECK_EQUAL(SIZE - 5, cbufferFree(&cbuf));
 
-    result = CBufferPopMultiple(&cbuf, 3, read);
+    result = cbufferPopMultiple(&cbuf, 3, read);
     CHECK_EQUAL(NO_ERROR, result);
     
-    CHECK_EQUAL(2, CBufferTaken(&cbuf));
-    CHECK_EQUAL(SIZE - 2, CBufferFree(&cbuf));
+    CHECK_EQUAL(2, cbufferTaken(&cbuf));
+    CHECK_EQUAL(SIZE - 2, cbufferFree(&cbuf));
 }
 
 int main(int ac, char** av)
