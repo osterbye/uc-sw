@@ -4,7 +4,11 @@
 #include "het.h"
 #include "spi.h"
 
-const pinDescription_t ledGreen = {gioPORTB, 1};
+const pinDescription_t ledGreen  = {hetPORT1, 10};
+const pinDescription_t ledOrange = {hetPORT1, 12};
+const pinDescription_t ledRed    = {hetPORT1, 11};
+
+const pinDescription_t userButton = {hetPORT1, 9};
 
 const pinDescription_t seatSensorFL = {hetPORT1, 15};
 const pinDescription_t seatSensorFR = {hetPORT1, 13};

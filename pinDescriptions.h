@@ -17,6 +17,10 @@ typedef struct {
 } pinDescription_t;
 
 extern const pinDescription_t ledGreen;
+extern const pinDescription_t ledOrange;
+extern const pinDescription_t ledRed;
+
+extern const pinDescription_t userButton;
 
 extern const pinDescription_t seatSensorFL;
 extern const pinDescription_t seatSensorFR;

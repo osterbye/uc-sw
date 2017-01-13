@@ -2142,9 +2142,9 @@ void hetInit(void)
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
+                 | (uint32) 0x00001000U
+                 | (uint32) 0x00000800U
+                 | (uint32) 0x00000400U
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
