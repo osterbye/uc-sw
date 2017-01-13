@@ -2319,7 +2319,7 @@ void hetInit(void)
     *     - Loop resolution prescaler
     *     - High resolution prescaler
     */
-    hetREG1->PFR = (uint32)((uint32) 6U << 8U)
+    hetREG1->PFR = (uint32)((uint32) 5U << 8U)
                 | ((uint32) 0U);
 
 
@@ -2599,7 +2599,7 @@ void hetInit(void)
     *     - Loop resolution prescaler
     *     - High resolution prescaler
     */
-    hetREG2->PFR = (uint32)((uint32) 6U << 8U)
+    hetREG2->PFR = (uint32)((uint32) 5U << 8U)
                 | ((uint32) 0U);
 
    /** - Parity control register
@@ -2623,7 +2623,7 @@ void hetInit(void)
     *     - Loop resolution prescaler
     *     - High resolution prescaler
     */
-    hetREG2->PFR = (uint32)((uint32) 6U << 8U)
+    hetREG2->PFR = (uint32)((uint32) 5U << 8U)
                 | ((uint32) 0U);
 
     /** - Setup interrupt priority level

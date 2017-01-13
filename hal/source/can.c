@@ -1426,11 +1426,11 @@ void canInit(void)
     *     - Setup sample jump width
     *     - Setup baud rate prescaler
     */
-    canREG1->BTR = (uint32)((uint32)1U << 16U) |
+    canREG1->BTR = (uint32)((uint32)0U << 16U) |
                    (uint32)((uint32)(3U - 1U) << 12U) |
                    (uint32)((uint32)((1U + 3U) - 1U) << 8U) |
                    (uint32)((uint32)(3U - 1U) << 6U) |
-                   (uint32)35U;
+                   (uint32)49U;
 
 
      /** - CAN1 Port output values */
@@ -2799,7 +2799,7 @@ void canInit(void)
                    (uint32)((uint32)(6U - 1U) << 12U) |
                    (uint32)((uint32)((3U + 6U) - 1U) << 8U) |
                    (uint32)((uint32)(4U - 1U) << 6U) |
-                   (uint32)19U;		
+                   (uint32)9U;		
 
 
    /** - CAN2 Port output values */
@@ -4165,7 +4165,7 @@ void canInit(void)
                    (uint32)((uint32)(1U - 1U) << 12U) |
                    (uint32)((uint32)((7U + 1U) - 1U) << 8U) |
                    (uint32)((uint32)(1U - 1U) << 6U) |
-                   (uint32)(uint32)7U;
+                   (uint32)(uint32)3U;
 
 
     /** - CAN3 Port output values */

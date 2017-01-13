@@ -515,7 +515,7 @@ typedef struct het_config_reg
 								| (uint32)0x00000000U \
 								| (uint32)0x00000000U)								
 								
-#define HET1_PFR_CONFIGVALUE    (((uint32)6U << 8U) | (uint32)0U)
+#define HET1_PFR_CONFIGVALUE    (((uint32)5U << 8U) | (uint32)0U)
 
 
 #define HET1_PRY_CONFIGVALUE     ((uint32)0x00000000U \
@@ -708,7 +708,7 @@ typedef struct het_config_reg
 								| (uint32)0x00000000U \
 								| (uint32)0x00000000U)								
 								
-#define HET2_PFR_CONFIGVALUE    (((uint32)6U << 8U) | (uint32)0U)
+#define HET2_PFR_CONFIGVALUE    (((uint32)5U << 8U) | (uint32)0U)
 
 
 #define HET2_PRY_CONFIGVALUE     ((uint32)0x00000000U \

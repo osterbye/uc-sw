@@ -188,7 +188,7 @@ typedef struct i2c_config_reg
 								 | (uint32)I2C_RESET_OUT)
   
 #define I2C_EMDR_CONFIGVALUE        0U
-#define I2C_PSC_CONFIGVALUE         9U
+#define I2C_PSC_CONFIGVALUE         4U
 #define I2C_DMAC_CONFIGVALUE        0x00000000U 
 #define I2C_FUN_CONFIGVALUE         0U  
 #define I2C_DIR_CONFIGVALUE       ((uint32)((uint32)0U << 1U) \
