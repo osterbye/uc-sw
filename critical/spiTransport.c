@@ -16,6 +16,7 @@
 #include "system.h"
 #include "sys_common.h"
 
+#include "../pinDescriptions.h"
 #include "cbuffer.h"
 #include "logging.h"
 
@@ -141,7 +142,7 @@ void taskSpiTx(void *pvParameters) {
                 //LOG_INFO("Starting transmission");
                 loggingToHex(loggingStr, txBuffer, length);
                 LOG_INFO("SPI TX: %s", loggingStr);
-                gioSetBit(gioPORTB, 1, 1); // set request to transmitt to active
+                gioSetBit(spiRequestTransmit.port, spiRequestTransmit.pin, 1); // set request to transmitt to active
                 setupDMASpiMsgTx(length, txBuffer);
             }
         }

@@ -10,6 +10,7 @@
 #include "subsystems/Comfort.h"
 #include "globalState.h"
 #include "gio.h"
+#include "../pinDescriptions.h"
 #include "het.h"
 #include "logging.h"
 #include "FreeRTOS.h"
@@ -25,16 +26,11 @@ void commandExecution_COMFORT(const CommandRequest * request) {
  */
 void taskSeatSensors(void *pvParameters) {
 	while(1) {
-		uint8_t any[4] = {0};
-		Set_seatOccupiedFL(gioGetBit(hetPORT1, 15));
-		any[0] = Get_seatOccupiedFL();
-		Set_seatOccupiedFR(gioGetBit(hetPORT1, 13));
-		any[1] = Get_seatOccupiedFR();
-		Set_seatOccupiedRL(gioGetBit(hetPORT1, 6));
-		any[2] = Get_seatOccupiedRL();
-		Set_seatOccupiedRR(gioGetBit(hetPORT1, 19));
-		any[3] = Get_seatOccupiedRR();
-		LOG_DEBUG("seats: %d %d %d %d", any[0], any[1], any[2], any[3]);
+		Set_seatOccupiedFL(gioGetBit(seatSensorFL.port, seatSensorFL.pin));
+		Set_seatOccupiedFR(gioGetBit(seatSensorFR.port, seatSensorFR.pin));
+		Set_seatOccupiedRL(gioGetBit(seatSensorRL.port, seatSensorRL.pin));
+		Set_seatOccupiedRR(gioGetBit(seatSensorRR.port, seatSensorRR.pin));
+		LOG_DEBUG("seats: %d %d %d %d", Get_seatOccupiedFL(), Get_seatOccupiedFR(), Get_seatOccupiedRL(), Get_seatOccupiedRR());
 	    vTaskDelay(200 / portTICK_PERIOD_MS);
 	}
 }
@@ -93,8 +89,8 @@ void doorlockRequestState(const bool lock) {
 void doorlockTask (void *pvParameters) {
 	while (1) {
 		if (requestedDoorState == DOOR_LOCK) {
-			gioSetBit(DOOR_LOCK_PORT, DOOR_LOCK_NUM, 1);
-			gioSetBit(DOOR_UNLOCK_PORT, DOOR_UNLOCK_NUM, 0);
+			gioSetBit(doorLock.port, doorLock.pin, 1);
+			gioSetBit(doorUnlock.port, doorUnlock.pin, 0);
 			vTaskDelay(500 / portTICK_PERIOD_MS);
 			if (requestedDoorState == DOOR_LOCK) {
 				requestedDoorState = DOOR_NOREQUEST;
@@ -102,8 +98,8 @@ void doorlockTask (void *pvParameters) {
 		}
 
 		if (requestedDoorState == DOOR_UNLOCK) {
-			gioSetBit(DOOR_UNLOCK_PORT, DOOR_UNLOCK_NUM, 1);
-			gioSetBit(DOOR_LOCK_PORT, DOOR_LOCK_NUM, 0);
+			gioSetBit(doorUnlock.port, doorUnlock.pin, 1);
+			gioSetBit(doorLock.port, doorLock.pin, 0);
 			vTaskDelay(500 / portTICK_PERIOD_MS);
 			if (requestedDoorState == DOOR_UNLOCK) {
 				requestedDoorState = DOOR_NOREQUEST;
@@ -111,8 +107,8 @@ void doorlockTask (void *pvParameters) {
 		}
 
 		if (requestedDoorState == DOOR_NOREQUEST) {
-			gioSetBit(DOOR_LOCK_PORT, DOOR_LOCK_NUM, 0);
-			gioSetBit(DOOR_UNLOCK_PORT, DOOR_UNLOCK_NUM, 0);
+			gioSetBit(doorLock.port, doorLock.pin, 0);
+			gioSetBit(doorUnlock.port, doorUnlock.pin, 0);
 			vTaskDelay(50 / portTICK_PERIOD_MS);
 		}
 	}
@@ -128,15 +124,15 @@ void doorlockTask (void *pvParameters) {
 		switch (requestedDoorState){
 		case (DOOR_UNLOCK):
 		case (DOOR_LOCK):
-			gioSetBit(DOOR_UNLOCK_PORT, DOOR_UNLOCK_NUM, !requestedDoorState);
-			gioSetBit(DOOR_LOCK_PORT, DOOR_LOCK_NUM, requestedDoorState);
+			gioSetBit(doorUnlock.port, doorUnlock.pin, !requestedDoorState);
+			gioSetBit(doorLock.port, doorLock.pin, requestedDoorState);
 			vTaskDelay(500 / portTICK_PERIOD_MS);
 			requestedDoorState = DOOR_NOREQUEST;
 			break;
 		case (DOOR_NOREQUEST):
 		default:
-			gioSetBit(DOOR_LOCK_PORT, DOOR_LOCK_NUM, 0);
-			gioSetBit(DOOR_UNLOCK_PORT, DOOR_UNLOCK_NUM, 0);
+			gioSetBit(doorLock.port, doorLock.pin, 0);
+			gioSetBit(doorUnlock.port, doorUnlock.pin, 0);
 			vTaskDelay(50 / portTICK_PERIOD_MS);
 			break;
 		}

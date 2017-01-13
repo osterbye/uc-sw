@@ -18,6 +18,7 @@
 #include "os_queue.h"
 #include "os_semphr.h"
 
+#include "../pinDescriptions.h"
 #include "canbus.h"
 #include "spiTransport.h"
 #include "dmaGroupANotification.h"
@@ -44,7 +45,7 @@ void dmaGroupANotification(dmaInterrupt_t inttype, uint32 channel)
         break;
     case DMA_CH1: // SPI TX DMA channel
         if (BTC == inttype) {
-            gioSetBit(spiPORT4, 0, 0); // set request to transmit to inactive
+            gioSetBit(spiRequestTransmit.port, spiRequestTransmit.pin, 0); // set request to transmit to inactive
             xSemaphoreGiveFromISR(spiTxAvailable, &xHigherPriorityTaskWoken); // XXX todo check waking up of the task
         }
         break;

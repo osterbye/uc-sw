@@ -20,9 +20,9 @@
 #include "os_semphr.h"
 
 /* other headers */
+#include "pinDescriptions.h"
 #include "globalState.h"
 #include "logging.h"
-
 #include "cmCommunication.h"
 #include "spiTransport.h"
 #include "canbus.h"
@@ -72,7 +72,7 @@ void main(void){
  */
 void HeartbeatTask(void *pvParameters) {
 	while(1){
-		gioToggleBit(gioPORTB, 1);
+		gioToggleBit(ledGreen.port, ledGreen.pin);
 		vTaskDelay(500 / portTICK_PERIOD_MS);
 	}
 }
