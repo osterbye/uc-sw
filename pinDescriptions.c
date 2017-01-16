@@ -19,3 +19,10 @@ const pinDescription_t doorLock   = {gioPORTA, 0};
 const pinDescription_t doorUnlock = {gioPORTB, 2};
 
 const pinDescription_t spiRequestTransmit = {spiPORT4, 0};
+
+const pinDescription_t can1Standby  = {gioPORTA, 0};
+const pinDescription_t can1Shutdown = {gioPORTA, 1};
+const pinDescription_t can2Standby  = {gioPORTA, 2};
+const pinDescription_t can2Shutdown = {gioPORTA, 5};
+const pinDescription_t can3Standby  = {gioPORTA, 6};
+const pinDescription_t can3Shutdown = {gioPORTA, 7};

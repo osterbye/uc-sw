@@ -32,6 +32,7 @@ typedef struct {
     uint32_t id;        /* CAN ID extracted from arbitration register (11- or 29-bit) */
     uint32_t mctl;      /* message control register with various flags describing message */
     uint8_t  pdu[8];    /* actual payload of CAN message */
+    uint8_t  interface; /* physical interface (1 to 3) */
 } canMessage_t;
 
 typedef struct {

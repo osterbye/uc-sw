@@ -259,9 +259,9 @@ typedef struct dcc_config_reg
                                      | (uint32)((uint32)0x5U << 8U) \
                                      | (uint32)((uint32)0xAU << 12U))
                                      
-#define DCC1_CNT0SEED_CONFIGVALUE    78408U
-#define DCC1_VALID0SEED_CONFIGVALUE  1584U
-#define DCC1_CNT1SEED_CONFIGVALUE    792000U
+#define DCC1_CNT0SEED_CONFIGVALUE    39204U
+#define DCC1_VALID0SEED_CONFIGVALUE  792U
+#define DCC1_CNT1SEED_CONFIGVALUE    396000U
 #define DCC1_CNT1CLKSRC_CONFIGVALUE  ((uint32)((uint32)10U << 12U) | (uint32)DCC1_CNT1_PLL1)
 /*SAFETYMCUSW 79 S MR:19.4 <APPROVED> "Values come from GUI drop down option" */
 #define DCC1_CNT0CLKSRC_CONFIGVALUE  ((uint32)DCC1_CNT0_OSCIN)

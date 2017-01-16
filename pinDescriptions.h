@@ -32,5 +32,11 @@ extern const pinDescription_t doorUnlock;
 
 extern const pinDescription_t spiRequestTransmit;
 
+extern const pinDescription_t can1Standby;
+extern const pinDescription_t can1Shutdown;
+extern const pinDescription_t can2Standby;
+extern const pinDescription_t can2Shutdown;
+extern const pinDescription_t can3Standby;
+extern const pinDescription_t can3Shutdown;
 
 #endif /* PINDESCRIPTIONS_H_ */

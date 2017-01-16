@@ -66,13 +66,13 @@ void dccInit(void)
     /** @b initialize @b DCC1 */
        
     /** DCC1 Clock0 Counter Seed value configuration */
-    dccREG1->CNT0SEED   = 78408U;
+    dccREG1->CNT0SEED   = 39204U;
     
     /** DCC1 Clock0 Valid Counter Seed value configuration */
-    dccREG1->VALID0SEED = 1584U;          
+    dccREG1->VALID0SEED = 792U;          
     
     /** DCC1 Clock1 Counter Seed value configuration */
-    dccREG1->CNT1SEED   = 792000U;
+    dccREG1->CNT1SEED   = 396000U;
 
     /** DCC1 Clock1 Source 1 Select */
     dccREG1->CNT1CLKSRC = (uint32)((uint32)10U << 12U) |     /** DCC Enable / Disable Key */

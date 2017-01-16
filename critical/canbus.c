@@ -5,6 +5,7 @@
 #include "FreeRTOS.h"
 #include "os_task.h"
 
+#include "../pinDescriptions.h"
 #include "canbus.h"
 #include "logging.h"
 
@@ -27,19 +28,27 @@ static void setupCanInterface(enum canInterfaces interface, const canMessage_t *
     canBASE_t * canBase;
     enum dmaCHANNEL dmaChannel;
     uint32_t requestLine;
+    const pinDescription_t * standby;
+    const pinDescription_t * shutdown;
 
     if (interface == CANBUS1) {
         canBase = canREG1;
         dmaChannel = DMA_CH13;
         requestLine = DCAN1_IF3_DMAREQ;
+        standby  = &can1Standby;
+        shutdown = &can1Shutdown;
     } else if (interface == CANBUS2) {
         canBase = canREG2;
         dmaChannel = DMA_CH14;
         requestLine = DCAN2_IF3_DMAREQ;
+        standby  = &can2Standby;
+        shutdown = &can2Shutdown;
     } else if (interface == CANBUS3) {
         canBase = canREG3;
         dmaChannel = DMA_CH15;
         requestLine = DCAN3_IF3_DMAREQ;
+        standby  = &can3Standby;
+        shutdown = &can3Shutdown;
     } else {
         LOG_WARN("Invalid CAN interface %d", interface);
         return;
@@ -80,6 +89,10 @@ static void setupCanInterface(enum canInterfaces interface, const canMessage_t *
     dmaSetCtrlPacket(dmaChannel, dmaConfig);
     dmaReqAssign(dmaChannel, requestLine);
     dmaSetChEnable(dmaChannel, DMA_HW);
+
+    /* enable CAN interface by deactivating standby and shutdown pins on transceiver */
+    gioSetBit(standby->port, standby->pin, 0);
+    gioSetBit(shutdown->port, shutdown->pin, 0);
 }
 /**
  * Initialising can bus interfaces
@@ -110,6 +123,16 @@ void canbusDmaNotification(dmaInterrupt_t inttype, uint32 channel) {
     receiveBuffer[writeIndex].id = extractID(receiveBuffer[writeIndex].id);
     /* if recieved message was written over unread message, set global flag */
     canbusIsMessageLost |= (receiveBuffer[writeIndex].mctl >> 14) & 1U;
+
+    if (channel == DMA_CH13) {
+        receiveBuffer[writeIndex].interface = CANBUS1;
+    } else if (channel == DMA_CH14) {
+        receiveBuffer[writeIndex].interface = CANBUS2;
+    } else if (channel == DMA_CH15) {
+        receiveBuffer[writeIndex].interface = CANBUS3;
+    } else { /* should never happen as function is called only for above channels */
+        receiveBuffer[writeIndex].interface = 0xff;
+    }
 
     /* calculate the destination address for next message and update DMA unit */
     writeIndex = (writeIndex + 1) % CANBUS_RECEIVE_BUFFER_SIZE;
@@ -205,8 +228,8 @@ static void handleReceivedMessages() {
     	dispatchToHandler(&receiveBuffer[readIndex]);
 #if (CANBUS_RX_DUMP)
         loggingToHex(loggingStr, &(receiveBuffer[readIndex].pdu), canGetDLC(&receiveBuffer[readIndex]));
+        LOG_DEBUG("CAN%d id %03X: %s", receiveBuffer[readIndex].interface, receiveBuffer[readIndex].id, loggingStr);
 #endif
-        LOG_DEBUG("%03X: %s", receiveBuffer[readIndex].id, loggingStr);
         readIndex = (readIndex + 1) % CANBUS_RECEIVE_BUFFER_SIZE;
     }
 }
@@ -216,16 +239,18 @@ static void handleReceivedMessages() {
 void canbusTask(void *pvParameters) {
     uint16_t counter = 0x660;
     uint8_t tx_data[16] = {0,1,2,3,4,5,6,7,8,9};
+    uint8_t canBusNum = 1;
 
     while(1){
     	counter++;
         /*tx_data[2] = 0x12 + counter;
         tx_data[3] = 0x34;
         tx_data[6] = '0' + (counter++ % 10);*/
-        //canbusSendMessage(canBusNum, counter, 8, tx_data); // + (counter % 3)
+        canbusSendMessage(canBusNum, counter, 8, tx_data); // + (counter % 3)
+        canBusNum = 1 + (canBusNum % 2);
         //LOG_INFO("sent CAN msg");
 
-        vTaskDelay(10 / portTICK_PERIOD_MS);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
         handleReceivedMessages();
     }
 }
