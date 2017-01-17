@@ -44,3 +44,10 @@ const pinDescription_t digitalOutput4 = {spiPORT3, SPI_PIN_CS2};
 const pinDescription_t digitalOutput5 = {spiPORT3, SPI_PIN_CS3};
 const pinDescription_t digitalOutput6 = {spiPORT5, SPI_PIN_CS0};
 const pinDescription_t digitalOutput7 = {spiPORT5, SPI_PIN_SIMO};
+
+const pinDescription_t cmReset     = {hetPORT1, PIN_HET_0};
+const pinDescription_t cmWake      = {hetPORT1, PIN_HET_1};
+const pinDescription_t cmSpiM2SInt = {hetPORT1, PIN_HET_2};
+const pinDescription_t cmSpiS2MInt = {hetPORT1, PIN_HET_3};
+const pinDescription_t cmFlashMode = {hetPORT1, PIN_HET_4};
+const pinDescription_t cmAuxSignal = {hetPORT1, PIN_HET_5};

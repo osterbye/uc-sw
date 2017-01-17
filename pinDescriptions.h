@@ -57,4 +57,11 @@ extern const pinDescription_t digitalOutput5;
 extern const pinDescription_t digitalOutput6;
 extern const pinDescription_t digitalOutput7;
 
+extern const pinDescription_t cmReset;
+extern const pinDescription_t cmWake;
+extern const pinDescription_t cmSpiM2SInt;
+extern const pinDescription_t cmSpiS2MInt;
+extern const pinDescription_t cmFlashMode;
+extern const pinDescription_t cmAuxSignal;
+
 #endif /* PINDESCRIPTIONS_H_ */

@@ -2149,12 +2149,12 @@ void hetInit(void)
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
+                 | (uint32) 0x00000020U
+                 | (uint32) 0x00000010U
+                 | (uint32) 0x00000008U
                  | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U;
+                 | (uint32) 0x00000002U
+                 | (uint32) 0x00000001U;
 
     /** - Set HET pins open drain enable */
     hetREG1->PDR = (uint32) 0x00000000U
@@ -2255,8 +2255,8 @@ void hetInit(void)
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
                  | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U
-                 | (uint32) 0x00000000U;
+                 | (uint32) 0x00000002U
+                 | (uint32) 0x00000001U;
 
     /** - Set HET pins high resolution share */
     hetREG1->HRSH = (uint32) 0x00000000U
@@ -2272,9 +2272,9 @@ void hetInit(void)
                   | (uint32) 0x00000000U
                   | (uint32) 0x00000000U
                   | (uint32) 0x00000000U
-                  | (uint32) 0x00000004U
-                  | (uint32) 0x00000002U
-                  | (uint32) 0x00000001U;
+                  | (uint32) 0x00000000U
+                  | (uint32) 0x00000000U
+                  | (uint32) 0x00000000U;
 
     /** - Set HET pins AND share */
     hetREG1->AND = (uint32) 0x00000000U
