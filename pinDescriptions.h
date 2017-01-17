@@ -64,4 +64,7 @@ extern const pinDescription_t cmSpiS2MInt;
 extern const pinDescription_t cmFlashMode;
 extern const pinDescription_t cmAuxSignal;
 
+extern const pinDescription_t gpsWheelTick;
+extern const pinDescription_t gpsWheelDirection;
+
 #endif /* PINDESCRIPTIONS_H_ */

@@ -51,3 +51,6 @@ const pinDescription_t cmSpiM2SInt = {hetPORT1, PIN_HET_2};
 const pinDescription_t cmSpiS2MInt = {hetPORT1, PIN_HET_3};
 const pinDescription_t cmFlashMode = {hetPORT1, PIN_HET_4};
 const pinDescription_t cmAuxSignal = {hetPORT1, PIN_HET_5};
+
+const pinDescription_t gpsWheelTick      = {hetPORT1, PIN_HET_6};
+const pinDescription_t gpsWheelDirection = {hetPORT1, PIN_HET_7};
