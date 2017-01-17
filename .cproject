@@ -13,7 +13,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="out" artifactName="${ProjName}" buildProperties="" cleanCommand="${CG_CLEAN_CMD}" description="" id="com.ti.ccstudio.buildDefinitions.TMS470.Debug.181176560" name="Debug" parent="com.ti.ccstudio.buildDefinitions.TMS470.Debug" prebuildStep="">
+				<configuration artifactExtension="out" artifactName="${ProjName}" buildProperties="" cleanCommand="${CG_CLEAN_CMD}" description="" id="com.ti.ccstudio.buildDefinitions.TMS470.Debug.181176560" name="Debug" parent="com.ti.ccstudio.buildDefinitions.TMS470.Debug" prebuildStep="# alphabetically sort halcogen project in order to make diffs possible;sort ${PROJECT_LOC}/hal/halcogen.dil -o ${PROJECT_LOC}/hal/halcogen.dil;">
 					<folderInfo id="com.ti.ccstudio.buildDefinitions.TMS470.Debug.181176560." name="/" resourcePath="">
 						<toolChain id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.DebugToolchain.1587323993" name="TI Build Tools" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.DebugToolchain" targetTool="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.linkerDebug.1748435944">
 							<option id="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS.2066409927" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS" valueType="stringList">
@@ -140,7 +140,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="out" artifactName="${ProjName}" buildProperties="" cleanCommand="${CG_CLEAN_CMD}" description="" id="com.ti.ccstudio.buildDefinitions.TMS470.Release.1383995772" name="Release" parent="com.ti.ccstudio.buildDefinitions.TMS470.Release">
+				<configuration artifactExtension="out" artifactName="${ProjName}" buildProperties="" cleanCommand="${CG_CLEAN_CMD}" description="" id="com.ti.ccstudio.buildDefinitions.TMS470.Release.1383995772" name="Release" parent="com.ti.ccstudio.buildDefinitions.TMS470.Release" prebuildStep="# alphabetically sort halcogen project in order to make diffs possible;sort ${PROJECT_LOC}/hal/halcogen.dil -o ${PROJECT_LOC}/hal/halcogen.dil;">
 					<folderInfo id="com.ti.ccstudio.buildDefinitions.TMS470.Release.1383995772." name="/" resourcePath="">
 						<toolChain id="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.ReleaseToolchain.751540398" name="TI Build Tools" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.ReleaseToolchain" targetTool="com.ti.ccstudio.buildDefinitions.TMS470_16.6.exe.linkerRelease.1267539413">
 							<option id="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS.2146556365" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS" valueType="stringList">
