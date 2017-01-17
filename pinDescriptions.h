@@ -39,4 +39,22 @@ extern const pinDescription_t can2Shutdown;
 extern const pinDescription_t can3Standby;
 extern const pinDescription_t can3Shutdown;
 
+extern const pinDescription_t digitalInput0;
+extern const pinDescription_t digitalInput1;
+extern const pinDescription_t digitalInput2;
+extern const pinDescription_t digitalInput3;
+extern const pinDescription_t digitalInput4;
+extern const pinDescription_t digitalInput5;
+extern const pinDescription_t digitalInput6;
+extern const pinDescription_t digitalInput7;
+
+extern const pinDescription_t digitalOutput0;
+extern const pinDescription_t digitalOutput1;
+extern const pinDescription_t digitalOutput2;
+extern const pinDescription_t digitalOutput3;
+extern const pinDescription_t digitalOutput4;
+extern const pinDescription_t digitalOutput5;
+extern const pinDescription_t digitalOutput6;
+extern const pinDescription_t digitalOutput7;
+
 #endif /* PINDESCRIPTIONS_H_ */

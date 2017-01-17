@@ -247,10 +247,10 @@ void canbusTask(void *pvParameters) {
         tx_data[3] = 0x34;
         tx_data[6] = '0' + (counter++ % 10);*/
         canbusSendMessage(canBusNum, counter, 8, tx_data); // + (counter % 3)
-        canBusNum = 1 + (canBusNum % 2);
+        //canBusNum = 1 + (canBusNum % 2);
         //LOG_INFO("sent CAN msg");
 
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
         handleReceivedMessages();
     }
 }
