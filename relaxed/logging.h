@@ -56,48 +56,28 @@ extern char loggingStr[LOGGING_BUFFER_LENGTH];
 
 #elif (LOGGING_SRCPATH_INCLUDED == 0)                   /* debug target, full log output */
     /* do {} while(0) form is used so macro can be safely applied in if-else context */
-    #define LOG_PRINTF(fmt, ...)   do { \
-    									snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, fmt, ##__VA_ARGS__); \
-    									sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); \
-    									} while(0)
-    #define LOG_DEBUG(fmt, ...)    do { \
-    									snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, "D " fmt "\r\n", ##__VA_ARGS__); \
-    									sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); \
-    									} while(0)
-    #define LOG_INFO(fmt, ...)     do { \
-    									snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, "I " fmt "\r\n", ##__VA_ARGS__); \
-    									sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); \
-    									} while(0)
-    #define LOG_WARN(fmt, ...)     do { \
-    									snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, "W!" fmt "\r\n", ##__VA_ARGS__); \
-    									sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); \
-    									} while(0)
-    #define LOG_CRITICAL(fmt, ...) do { \
-    									snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, "C!" fmt "\r\n", ##__VA_ARGS__); \
-    									sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); \
-    									} while(0)
+    #define LOG_PRINTF(fmt, ...)   do { snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, fmt, ##__VA_ARGS__); \
+                                     sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); } while(0)
+    #define LOG_DEBUG(fmt, ...)    do { snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, PREFIX_DEBUG    fmt "\r\n", ##__VA_ARGS__); \
+                                     sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); } while(0)
+    #define LOG_INFO(fmt, ...)     do { snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, PREFIX_INFO     fmt "\r\n", ##__VA_ARGS__); \
+                                     sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); } while(0)
+    #define LOG_WARN(fmt, ...)     do { snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, PREFIX_WARN     fmt "\r\n", ##__VA_ARGS__); \
+                                     sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); } while(0)
+    #define LOG_CRITICAL(fmt, ...) do { snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, PREFIX_CRITICAL fmt "\r\n", ##__VA_ARGS__); \
+                                     sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); } while(0)
 #else                                                   /* debug target, full log output with source filename and line included */
     /* do {} while(0) form is used so macro can be safely applied in if-else context */
-    #define LOG_PRINTF(fmt, ...)   do { \
-    									snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, fmt, ##__VA_ARGS__); \
-    									sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); \
-    									} while(0)
-    #define LOG_DEBUG(fmt, ...)    do { \
-    									snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, "D " __FILE__ ":%d " fmt "\r\n", __LINE__, ##__VA_ARGS__); \
-    									sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); \
-    									} while(0)
-    #define LOG_INFO(fmt, ...)     do { \
-    									snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, "I " __FILE__ ":%d " fmt "\r\n", __LINE__, ##__VA_ARGS__); \
-    									sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); \
-    									} while(0)
-    #define LOG_WARN(fmt, ...)     do { \
-    									snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, "W!" __FILE__ ":%d " fmt "\r\n", __LINE__, ##__VA_ARGS__); \
-    									sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); \
-    									} while(0)
-    #define LOG_CRITICAL(fmt, ...) do { \
-    									snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, "C!" __FILE__ ":%d " fmt "\r\n", __LINE__, ##__VA_ARGS__); \
-    									sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); \
-    									} while(0)
+    #define LOG_PRINTF(fmt, ...)   do { snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, fmt, ##__VA_ARGS__); \
+                                     sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); } while(0)
+    #define LOG_DEBUG(fmt, ...)    do { snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, PREFIX_DEBUG    __FILE__ ":%d " fmt "\r\n", __LINE__, ##__VA_ARGS__); \
+                                     sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); } while(0)
+    #define LOG_INFO(fmt, ...)     do { snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, PREFIX_INFO     __FILE__ ":%d " fmt "\r\n", __LINE__, ##__VA_ARGS__); \
+                                     sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); } while(0)
+    #define LOG_WARN(fmt, ...)     do { snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, PREFIX_WARN     __FILE__ ":%d " fmt "\r\n", __LINE__, ##__VA_ARGS__); \
+                                     sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); } while(0)
+    #define LOG_CRITICAL(fmt, ...) do { snprintf(loggingBuffer, LOGGING_BUFFER_LENGTH, PREFIX_CRITICAL __FILE__ ":%d " fmt "\r\n", __LINE__, ##__VA_ARGS__); \
+                                     sciSend(scilinREG, strlen(loggingBuffer), (uint8 *) loggingBuffer); } while(0)
 #endif
 
 void loggingInit();
