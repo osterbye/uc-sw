@@ -162,7 +162,9 @@ void vSpiRx(void *pvParameters){
       for(i = 0; i < spiRxFrameAvail; i++){
         parseSpiRxByte(spiRxBuffer[spiRxBufferPosition]);
         xSemaphoreTake(xSpiRxFrameCnt,0);
-        LOG_DEBUG("Received SPI byte: %02X\r\n", spiRxBuffer[spiRxBufferPosition]);
+        if (spiRxBuffer[spiRxBufferPosition] != 0x00) {
+            LOG_DEBUG("Received SPI byte: %02X\r\n", spiRxBuffer[spiRxBufferPosition]);
+        }
         /*update buffer end position*/
         spiRxBufferPosition++;
         if(spiRxBufferPosition >= SPIRXBUFFERSIZE){
