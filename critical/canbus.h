@@ -9,7 +9,7 @@
 
 /* testing/debugging helpers */
 #define CANBUS_LOOPBACK      0
-#define CANBUS_RX_DUMP       1
+#define CANBUS_RX_DUMP       0
 
 enum canInterfaces {
     CANBUS1 = 1,

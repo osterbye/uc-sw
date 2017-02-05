@@ -161,6 +161,7 @@ static void receiveBlinkerLights(const CanMessage_t * msg) {
     uint8_t blinkerByte = msg->pdu[CBO(0)];
     Set_blinkerLeft( blinkerByte & (1u << 0) != 0);
     Set_blinkerRight(blinkerByte & (1u << 1) != 0);
+    //LOG_INFO("receiveBlinkerLights");
 }
 
 static void receiveDoorsOpen(const CanMessage_t * msg) {
@@ -169,10 +170,12 @@ static void receiveDoorsOpen(const CanMessage_t * msg) {
     Set_doorOpenFR((doorByte & (1u << 1)) != 0);
     Set_doorOpenRL((doorByte & (1u << 2)) != 0);
     Set_doorOpenRR((doorByte & (1u << 3)) != 0);
+    //LOG_INFO("receiveDoorsOpen");
 }
 
 static void receiveVehicleLocked(const CanMessage_t * msg) {
     Set_vehicleLocked(msg->pdu[CBO(0)] == 2u);
+    //LOG_INFO("receiveVehicleLocked");
 }
 
 typedef struct {
@@ -220,15 +223,18 @@ static void handleReceivedMessages() {
 void canbusTask(void *pvParameters) {
     //uint8_t tx_data[16] = {0,1,2,3,4,5,6,7,8,9};
     //uint16_t counter = 0x660;
+    //uint16_t transmission_counter = 0;
 
     while(1){
-        /*
-        counter++;
-        tx_data[2] = 0x12 + counter;
-        tx_data[3] = 0x34;
-        tx_data[6] = '0' + (counter++ % 10);*/
-        //canbusSendMessage(canBusNum, counter, 8, tx_data); // + (counter % 3)
-        //LOG_INFO("sent CAN msg");
+
+    	/*if ((++transmission_counter)%50 == 0) {
+			counter++;
+			tx_data[2] = 0x12 + counter;
+			tx_data[3] = 0x34;
+			tx_data[6] = '0' + (counter++ % 10);
+			canbusSendMessage(CANBUS3, counter, 8, tx_data); // + (counter % 3)
+			LOG_INFO("sent CAN msg");
+    	}*/
 
         vTaskDelay(10 / portTICK_PERIOD_MS);
         handleReceivedMessages();
