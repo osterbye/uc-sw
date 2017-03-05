@@ -9,6 +9,7 @@
 	X(COMFORT             ) \
 	X(LIGHTS              ) \
 	X(DRIVETRAIN          ) \
+	X(AP102CTRL           ) \
 
 // function definitions
 #define X(commandType)   void commandExecution_##commandType(const CommandRequest * request);
