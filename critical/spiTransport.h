@@ -33,18 +33,28 @@ typedef enum{
 	SPIRX_WAITINGFORPREAMBULE1BYTE, /*0xAA*/
 	SPIRX_WAITINGFORPREAMBULE2BYTE, /*0x55*/
 	SPIRX_TYPE,
+	SPIRX_FRAMEID,
 	SPIRX_LENGTH,
 	SPIRX_PAYLOAD,
 	SPIRX_CRC,
 } SpiRxSM_t;
 
+/* as per "Table 6-32. DMA Request Line Connection" from uC datasheet */
+enum spiDmaRequests {
+    MIBSPI3_3_DMAREQ = 5,
+    MIBSPI3_4_DMAREQ = 8,
+};
+
 extern SemaphoreHandle_t xSpiRxFrameCnt;
 extern SemaphoreHandle_t xSpiTxAvailable;
 
-#define SPIRXMESSAGENRMAX 100
-#define SPIRXMESSAGELENMAX 100
-#define RX_BUFFER_SIZE 128
-#define SPIRXBUFFERSIZE 10
-#define SPITXBUFFERSIZE 128
+#define SPIRXMESSAGENRMAX 100u
+
+#define SPITXFRAMEOVERHEAD 16u /* preamble, type, reserved, length, crc */
+
+#define SPIRXBUFFERSIZE 128u
+#define SPITXBUFFERSIZE 128u
+
+#define SPIFRAMESIZE    1u /* size of DMA transfer chunk */
 
 #endif /* CRITICAL_SPITRANSPORT_H_ */

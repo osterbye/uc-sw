@@ -50,11 +50,10 @@ void main(void){
   loggingInit();
   gioInit(); // General input output
   dmaEnable();
-  spiInit();
+  mibspiInit();
   hetInit();
   canbusInit();
-  // Enable SPI3 DMAreqs
-  spiREG3->INT0 = (spiREG3->INT0 & 0xFFFEFFFFU) | (uint32)((uint32)1U << 16U);  /* ENABLE DMAREQ */
+
   
   LOG_INFO("Creating tasks");
   task_create(vHeartbeat, "HEARTBEAT", 400, NULL, 2, NULL);

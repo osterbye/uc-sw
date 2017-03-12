@@ -475,64 +475,6 @@ void dmaFTCAInterrupt(void)
 }
 
 
-/** @fn void dmaLFSAInterrupt(void)
-*   @brief DMA Interrupt Handler
-*
-*   Frame transfer complete Interrupt handler for DMA channel routed to Group A
-*
-*/
-#pragma CODE_STATE(dmaLFSAInterrupt, 32)
-#pragma INTERRUPT(dmaLFSAInterrupt, IRQ)
-
-/* SourceId : DMA_SourceId_017 */
-/* DesignId : DMA_DesignId_016 */
-/* Requirements: HL_SR181, HL_SR182 */
-void dmaLFSAInterrupt(void)
-{
-    uint32 offset = dmaREG->LFSAOFFSET;
-
-/* USER CODE BEGIN (2) */
-/* USER CODE END */
-
-    if (offset != 0U)
-    {
-        dmaGroupANotification(LFS, offset - 1U);
-    }
-
-/* USER CODE BEGIN (3) */
-/* USER CODE END */
-
-}
-
-
-/** @fn void dmaHBCAInterrupt(void)
-*   @brief DMA Interrupt Handler
-*
-*   Frame transfer complete Interrupt handler for DMA channel routed to Group A
-*
-*/
-#pragma CODE_STATE(dmaHBCAInterrupt, 32)
-#pragma INTERRUPT(dmaHBCAInterrupt, IRQ)
-
-/* SourceId : DMA_SourceId_018 */
-/* DesignId : DMA_DesignId_016 */
-/* Requirements: HL_SR181, HL_SR182 */
-void dmaHBCAInterrupt(void)
-{
-    uint32 offset = dmaREG->HBCAOFFSET;
-
-/* USER CODE BEGIN (4) */
-/* USER CODE END */
-
-    if (offset != 0U)
-    {
-        dmaGroupANotification(HBC, offset - 1U);
-    }
-
-/* USER CODE BEGIN (5) */
-/* USER CODE END */
-
-}
 
 
 /** @fn void dmaBTCAInterrupt(void)

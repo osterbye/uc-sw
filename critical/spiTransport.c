@@ -10,7 +10,9 @@
 /* Hal includes */
 #include "gio.h"
 #include "crc.h"
-#include "spi.h"
+#include "mibspi.h"
+
+//#include "spi.h"
 #include "sys_dma.h"
 
 #include "system.h"
@@ -32,6 +34,9 @@ SemaphoreHandle_t xSpiTxAvailable = NULL;
 // Spi Rx buffers
 uint8_t spiRxBuffer[SPIRXBUFFERSIZE] = {0};
 
+static uint64_t rxFramesDropped = 0;
+static uint64_t rxFramesReceived = 0;
+
 // Spi Tx buffers
 #define SPITXFASTNR 10 /* number of fast spi slots available*/
 #define SPITXFASTMESSAGESIZEMAX 10 /*maximum message size*/
@@ -45,6 +50,7 @@ spiTxFast_t spiTxFast[SPITXFASTNR] = {0};
 #define SPITXSLOWBUFFERSIZE 0x100
 
 uint8_t spiTxSlowBuffer[SPITXSLOWBUFFERSIZE] = {0};
+
 CBuffer_t spiTxSlow = {
   .size = SPITXSLOWBUFFERSIZE,
   .head = 1,
@@ -55,6 +61,7 @@ CBuffer_t spiTxSlow = {
 
 void vSpiTx(void *pvParameters){
   uint8_t txBuffer[SPITXBUFFERSIZE] = {0};
+  uint8_t counter = 0;
 
   LOG_INFO("Entering SPI TX task ");
 
@@ -82,9 +89,21 @@ void vSpiTx(void *pvParameters){
         txMessageAvailable = TRUE;
       } else if(CBufferTaken(&spiTxSlow)){ // check if a message is available
         length = CBufferPop(&spiTxSlow);
-        /* TODO check if message is longer than tx buffer size */
-        CBufferPopMultiple(&spiTxSlow, length, &txBuffer[8]);
-        txMessageAvailable = TRUE;
+        if (length > SPITXBUFFERSIZE - SPITXFRAMEOVERHEAD) {
+          LOG_WARN("SPI TX message larger than buffer, message dropped");
+          /* drop message without causing buffer overrun */
+          while (length) {
+            uint16_t chunk = SPITXBUFFERSIZE - SPITXFRAMEOVERHEAD;
+            if (chunk > length) {
+              chunk = length;
+            }
+            CBufferPopMultiple(&spiTxSlow, chunk, &txBuffer[8]);
+            length = length - chunk;
+          }
+        } else {
+          CBufferPopMultiple(&spiTxSlow, length, &txBuffer[8]);
+          txMessageAvailable = TRUE;
+        }
       } else { // nothing available try again in a few miliseconds
         xSemaphoreGive(xSpiTxAvailable);
         vTaskDelay(10 / portTICK_PERIOD_MS);
@@ -94,24 +113,24 @@ void vSpiTx(void *pvParameters){
       if(txMessageAvailable){
 
         uint64_t crc = 0;
-        length += 8 + 8;
+        length += 8 + 8; // frame header & CRC
 
         txMessageAvailable = FALSE;
 
         txBuffer[0]=0xAA; /*preambule*/
         txBuffer[1]=0x55; /*preambule*/
         txBuffer[2]=type;
-        txBuffer[3]=0x11;
+        txBuffer[3]=counter++;
         txBuffer[4]=0x11;
         txBuffer[5]=0x11;
         txBuffer[6]=(uint8_t)((length >> 8) & 0xFF);
         txBuffer[7]=(uint8_t)(length & 0xFF);
 
-        /* pad by zeros untill divisible by 8 */
+        /* pad by zeros until divisible by 8 */
         /*for (i = 0; i < (8 - length / 8); i++){
           txBuffer[8 + length + i] = 0x00;
           }
-          /* add padding and preambule length*/
+          /* add padding and preamble length*/
         /*length = length + i + 8;
           crc = CrcDMACalculate (length, txBuffer);
           /* add crc to end of message */
@@ -119,15 +138,13 @@ void vSpiTx(void *pvParameters){
         /*add crc length*/
         //length += 8;
         /*send the message*/
-        LOG_INFO("Starting transmission");
-        gioSetBit(gioPORTB,1,1); // set request to transmitt to active
+        //LOG_INFO("Starting transmission");
+        gioSetBit(gioPORTB,1,1); // set request to transmit to active
         setupDMASpiMsgTx(length, txBuffer);
       }
     }
   }
 }
-
-
 
 void vSpiRx(void *pvParameters){
   uint8_t i = 0;
@@ -137,46 +154,47 @@ void vSpiRx(void *pvParameters){
 
   LOG_INFO("Entering SPI RX task ");
 
-  xSpiRxFrameCnt = xSemaphoreCreateCounting( SPIRXBUFFERSIZE , 0 );
-  vQueueAddToRegistry( xSpiRxFrameCnt, "SPI RX byte count" );
+  xSpiRxFrameCnt = xSemaphoreCreateCounting(SPIRXBUFFERSIZE , 0);
+  vQueueAddToRegistry(xSpiRxFrameCnt, "SPI RX byte count");
 
   initDMASpiRx();
 
-  //  uint8_t testMsg[100]={0xFF,0x11,0xAA,
-  //                        0xAA,0x55, 0x77 /*type*/,0x11,0x22,0x33,0x00,0x10/*16bytes payload length*/,
-  //                        0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,
-  //                        0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x1F,
-  //                        0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x1F, /*CRC*/
-  //                        };
+  // uint8_t testMsg[100]={0xFF,0x11,0xAA,
+  //                       0xAA,0x55, 0x77 /*type*/,0x11,0x22,0x33,0x00,0x10/*16bytes payload length*/,
+  //                       0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,
+  //                       0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x1F,
+  //                       0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x1F, /*CRC*/
+  //                       };
   //
   //  for(i = 0; i < 35; i++){
   //    ParseSpiRxByte(testMsg[i]);
   //  }
   //  while(1);
 
+  mibspiTransfer(mibspiREG3, 0ul);
   while(1){
     /* number of available frames/bytes */
     spiRxFrameAvail = uxQueueMessagesWaiting(xSpiRxFrameCnt); //
-    if(spiRxFrameAvail){
-      /* Parse the next spiRxFrameAvail bytes*/
-      for(i = 0; i < spiRxFrameAvail; i++){
-        parseSpiRxByte(spiRxBuffer[spiRxBufferPosition]);
-        xSemaphoreTake(xSpiRxFrameCnt,0);
-        if (spiRxBuffer[spiRxBufferPosition] != 0x00) {
-            LOG_DEBUG("Received SPI byte: %02X\r\n", spiRxBuffer[spiRxBufferPosition]);
-        }
-        /*update buffer end position*/
-        spiRxBufferPosition++;
-        if(spiRxBufferPosition >= SPIRXBUFFERSIZE){
-          spiRxBufferPosition = 0;
-        }
-      }
+
+    if (spiRxFrameAvail > SPIRXBUFFERSIZE / SPIFRAMESIZE){
+      // if DMA has refilled whole buffer between two parsings, we need to
+      // report the data loss and synchronize to head of circular buffer, or
+      // else we would parse the whole buffer twice
+      LOG_WARN("Buffer overrun, resynchronizing");
+      for(i = 0; i < spiRxFrameAvail - SPIRXBUFFERSIZE / SPIFRAMESIZE; i++){
+        xSemaphoreTake(xSpiRxFrameCnt, 0); // mark frame as parsed
+      }  
+      spiRxFrameAvail = spiRxFrameAvail % (SPIRXBUFFERSIZE / SPIFRAMESIZE);
     }
-
-    vTaskDelay(10 / portTICK_PERIOD_MS);
-
+    while(spiRxFrameAvail--){
+      for(i = 0; i < SPIFRAMESIZE; i++){
+        parseSpiRxByte(spiRxBuffer[spiRxBufferPosition]);
+        spiRxBufferPosition = (spiRxBufferPosition + 1) % SPIRXBUFFERSIZE;
+      }
+      xSemaphoreTake(xSpiRxFrameCnt, 0); // mark frame as parsed
+    }
+    vTaskDelay(20 / portTICK_PERIOD_MS);
   }
-
 }
 
 
@@ -187,6 +205,14 @@ inline void parseSpiRxByte(uint8_t data){
   static uint64_t crc = 0;
   static uint16_t length = 0;
   static uint8_t message[SPIRXMESSAGENRMAX] = {0};
+  static uint8_t lastFrameIndex = 0;
+
+  // buffer overrun prevention - message that cannot fit is dropped
+  if (globalCnt >= SPIRXMESSAGENRMAX) {
+    LOG_WARN("Buffer full; SPI message dropped");
+    globalCnt = 0;
+    state = SPIRX_WAITINGFORPREAMBULE1BYTE;
+  }
 
   /* parsing state machine*/
   switch (state){
@@ -205,12 +231,23 @@ inline void parseSpiRxByte(uint8_t data){
       state = SPIRX_TYPE;
     } else {
       if(0xAA != data){
-    	  state = SPIRX_WAITINGFORPREAMBULE1BYTE;
+        state = SPIRX_WAITINGFORPREAMBULE1BYTE;
       }
     }
     break;
   case SPIRX_TYPE:
     message[globalCnt] = data;
+    miscCnt = 0;
+    globalCnt++;
+    state = SPIRX_FRAMEID;
+    break;
+  case SPIRX_FRAMEID:
+    // TODO: handle overflows of rxFramesDropped and rxFramesReceived
+    rxFramesDropped += data - lastFrameIndex - 1;
+    //if(data - lastFrameIndex - 1) {
+    //  LOG_WARN("SPI frames lost %lu, total lost %lu", data - lastFrameIndex - 1, rxFramesDropped);
+    //}
+    lastFrameIndex = data;
     miscCnt = 0;
     globalCnt++;
     state = SPIRX_LENGTH;
@@ -219,12 +256,17 @@ inline void parseSpiRxByte(uint8_t data){
     message[globalCnt] = data;
     globalCnt++;
     miscCnt++;
-    if(4 == miscCnt){
+    if(3 == miscCnt){
       length = data << 8;
-    } else if(5 == miscCnt){
+    } else if(4 == miscCnt) {
       length = length | data;
       miscCnt = 0;
-      state = SPIRX_PAYLOAD;
+      if (length > SPIRXMESSAGENRMAX) {
+        LOG_WARN("SPI frame longer than buffer; dropping");
+        state = SPIRX_WAITINGFORPREAMBULE1BYTE;
+      } else {
+        state = SPIRX_PAYLOAD;
+      }
     }
     break;
   case SPIRX_PAYLOAD:
@@ -247,6 +289,7 @@ inline void parseSpiRxByte(uint8_t data){
       // if it is:
       // send to protobuff handler ---> later have a by type dispatcher
       // TranslateToProtobuf(uint8_t * message, uint16_t length???);
+      rxFramesReceived += 1;
       streamToProtobuf(&message[8], length);
       state = SPIRX_WAITINGFORPREAMBULE1BYTE;
     } else {
@@ -269,8 +312,9 @@ uint8_t addToSPITxSlow(uint8_t length, uint8_t * message){
   } else { // not engough space
     return 1;
   }
-	return 0;
+  return 0;
 }
+
 uint8_t addToSPITxFast(uint8_t length, uint8_t * message){
   uint8_t i = 0;
 
@@ -306,68 +350,124 @@ uint8_t * getFromSPITxFast(void){
 
 /* ----------------------------------------- DMA setup */
 void initDMASpiTx(void){
-  /* - assigning dma request: channel-1 with request line - 15 (SPI3 Transmit DMA Request) */
-  dmaReqAssign(DMA_CH1,15);
+  uint8_t i;
+  // initialize SPI buffers with 0xff values (instead of reset value 0x00)
+  for (i = 0; i < 8; i++) {
+    mibspiRAM3->tx[i].data = 0xff;
+  }
+  dmaReqAssign(DMA_CH1, MIBSPI3_4_DMAREQ);
+  dmaEnableInterrupt(DMA_CH1, FTC);
   dmaEnableInterrupt(DMA_CH1, BTC);
+  mibspiPmodeSet(mibspiREG3, PMODE_NORMAL, DATA_FORMAT0);
+  dmaSetChEnable(DMA_CH1, DMA_HW); /* trigger on h/w request */
 
+  mibspiREG3->DMACTRL[1] = ( 1ul << 31) /* Auto-disable of DMA channel after ICOUNT+1 transfers */
+                         | ( 0ul << 24) /* trigger DMA transfer after this buffer was written into */
+                         | ( 0ul << 20) /* RXDMA_MAPx */
+                         | ( 4ul << 16) /* TXDMA_MAPx, as specified in dmaReqAssign() */
+                         | ( 0ul << 15) /* Receive data DMA channel enable */
+                         | ( 0ul << 14) /* Transmit data DMA channel enable (enabled later) */
+                         | ( 0ul << 13) /* Non-interleaved DMA block transfer, applicable only for master mode */
+                         | ( 0ul <<  8);/* ICOUNTx, reload value for DMACTRLx->COUNT (countdown of DMA reads) */
+  /* Enable large count because ICOUNTx in DMACTRL is too short (only 5 bits) */
+  mibspiREG3->DMACNTLEN = 1ul; /* LARGE_COUNT: 0 for DMAxCTRL; 1 for DMAxCOUNT */
+  /* Against HALCoGen wishes, CS_HOLD for 8th buffer is set to 1 to achieve desired behavior */
+  mibspiRAM3->tx[7].control |= (uint16)((uint16)1U << 12U);
+  mibspiTransfer(mibspiREG3, 0ul);
 }
 
 void initDMASpiRx(void){
+/* MibSPI settings:
+    * slave mode operation
+    * Rx and Tx interrupts disabled, other interrupts logged as errors
+    * 8 bit SPI message length
+    * 1 buffer used for incoming/outgoing traffic
+
+  DMA settings:
+    * Block transfer count is set to cover whole spiRxBuffer length
+    * Transfer Type is "frame", transfer is triggered when buffer in RxRAM is filled
+    * 0 byte Source Address Element Index (always re-reading same buffer)
+    * 0 byte Source Address Frame Index (always re-reading same buffers)
+    * FTC interrupts signal to CPU that SPIFRAMESIZE bytes are ready to be processed from SRAM
+    * FTC IRQ causes increase of semaphore count, to signal the Rx task to process SPIFRAMESIZE more bytes on next pass
+    * CPU can stall for maximum SPIRXBUFFERSIZE bytes before some traffic is lost
+  */
+
   g_dmaCTRL xDmaSetup;         /* dma control packet configuration stack - Transmit Channels*/
 
-  /* - assigning dma request: channel-0 with request line - 14 (SPI3 Receive DMA Request)*/
-  dmaReqAssign(DMA_CH0,14);
+  xDmaSetup.SADD      = (uint32)(&mibspiRAM3->rx[0].data)+1; /* source address             */
+  xDmaSetup.DADD      = (uint32) spiRxBuffer;                /* destination  address       */
+
+  xDmaSetup.CHCTRL    = 0;                                   /* channel control            */
+  xDmaSetup.PORTASGN  = 4;                                   /* port b                     */
+  xDmaSetup.TTYPE     = FRAME_TRANSFER;                      /* transfer type              */
+  xDmaSetup.ADDMODERD = ADDR_FIXED;                         /* address mode read          */
+  xDmaSetup.ADDMODEWR = ADDR_INC1;                           /* address mode write         */
+  xDmaSetup.AUTOINIT  = AUTOINIT_ON;                         /* Auto-initiation mode       */
+
+  xDmaSetup.ELCNT     = SPIFRAMESIZE;                        /* element count in a frame   */
+  xDmaSetup.FRCNT     = SPIRXBUFFERSIZE / SPIFRAMESIZE;      /* frame count in a block     */
+
+  xDmaSetup.ELSOFFSET = 0;                                   /* element source offset      */
+  xDmaSetup.ELDOFFSET = SPIFRAMESIZE;                        /* element destination offset */
+
+  xDmaSetup.FRSOFFSET = 0;                                   /* frame source offset        */
+  xDmaSetup.FRDOFFSET = 0;                                   /* frame destination offset   */
+
+  xDmaSetup.RDSIZE    = ACCESS_8_BIT;                        /* element read size          */
+  xDmaSetup.WRSIZE    = ACCESS_8_BIT;                       /* element write size         */
+
+  dmaSetCtrlPacket(DMA_CH0, xDmaSetup);
+  dmaReqAssign(DMA_CH0, MIBSPI3_3_DMAREQ);
+  dmaSetChEnable(DMA_CH0, DMA_HW); /* trigger on h/w request */
   dmaEnableInterrupt(DMA_CH0, FTC);
+  // dmaEnableInterrupt(DMA_CH0, BTC); // might be useful to re-sync DMA with parser
 
-  xDmaSetup.SADD      = (uint32)(&spiREG3->BUF)+3;    /* source address             */
-  xDmaSetup.DADD      = (uint32)spiRxBuffer;          /* destination  address       */
-  xDmaSetup.CHCTRL    = 0;                 /* channel control            */
-  xDmaSetup.FRCNT     = SPIRXBUFFERSIZE;                 /* frame count                */
-  //xDmaSetup.FRCNT     = 8;                 /* frame count                */
-  xDmaSetup.ELCNT     = 1;                 /* element count              */
-  xDmaSetup.ELDOFFSET = 0;                 /* element destination offset */
-  xDmaSetup.ELSOFFSET = 0;                   /* element source offset      */
-  xDmaSetup.FRDOFFSET = 0;                   /* frame destination offset   */
-  xDmaSetup.FRSOFFSET = 0;                 /* frame destination offset   */
-  xDmaSetup.PORTASGN  = 4;                 /* port b                     */
-  xDmaSetup.RDSIZE    = ACCESS_8_BIT;      /* read size                  */
-  xDmaSetup.WRSIZE    = ACCESS_8_BIT;        /* write size                 */
-  xDmaSetup.TTYPE     = FRAME_TRANSFER ;   /* transfer type              */
-  xDmaSetup.ADDMODERD = ADDR_FIXED;        /* address mode read          */
-  xDmaSetup.ADDMODEWR = ADDR_INC1;         /* address mode write         */
-  xDmaSetup.AUTOINIT  = AUTOINIT_ON;       /* autoinit                   */
-  // - setting DMA control packets
-  dmaSetCtrlPacket(DMA_CH0,xDmaSetup);
-  // - setting the DMA channel to trigger on h/w request */
-  dmaSetChEnable(DMA_CH0, DMA_HW);
-
+  mibspiPmodeSet(mibspiREG3, PMODE_NORMAL, DATA_FORMAT0);
+  mibspiREG3->DMACTRL[0] = ( 0ul << 31) /* Auto-disable of DMA channel after ICOUNT+1 transfers */
+                         | ( 0ul << 24) /* trigger DMA transfer after this buffer was written into */
+                         | ( 3ul << 20) /* RXDMA_MAPx, as specified in dmaReqAssign() */
+                         | ( 0ul << 16) /* TXDMA_MAPx */
+                         | ( 1ul << 15) /* Receive data DMA channel enable */
+                         | ( 0ul << 14) /* Transmit data DMA channel enable */
+                         | ( 0ul << 13) /* Non-interleaved DMA block transfer, applicable only for master mode */
+                         | ( 8ul <<  8);/* ICOUNTx, reload value for DMACTRLx->COUNT (countdown of DMA reads) */
+  /* Against HALCoGen wishes, CS_HOLD for 8th buffer is set to 1 to achieve desired behavior */
+  mibspiRAM3->tx[7].control |= (uint16)((uint16)1U << 12U);
 }
 
 static void setupDMASpiMsgTx(uint32_t length, uint8_t * message){
   g_dmaCTRL xDmaSetup;         /* dma control packet configuration stack - Transmit Channels*/
 
-  xDmaSetup.SADD      = (uint32)message + 1;        /* source address */
-  xDmaSetup.DADD      = (uint32)(&spiREG3->DAT0)+3;  /* destination  address */
-  xDmaSetup.CHCTRL    = 0;                 /* channel control            */
-  xDmaSetup.FRCNT     = length;            /* frame count                */
-  xDmaSetup.ELCNT     = 1;                 /* element count              */
-  xDmaSetup.ELDOFFSET = 0;                 /* element destination offset */
-  xDmaSetup.ELSOFFSET = 0;                 /* element source offset      */
-  xDmaSetup.FRDOFFSET = 0;                 /* frame destination offset   */
-  xDmaSetup.FRSOFFSET = 0;                 /* frame destination offset   */
-  xDmaSetup.PORTASGN  = 4;                 /* port b                     */
-  xDmaSetup.RDSIZE    = ACCESS_8_BIT;      /* read size                  */
-  xDmaSetup.WRSIZE    = ACCESS_8_BIT;      /* write size                 */
-  xDmaSetup.TTYPE     = FRAME_TRANSFER ;   /* transfer type block/frame  */
-  xDmaSetup.ADDMODERD = ADDR_INC1;         /* address mode read          */
-  xDmaSetup.ADDMODEWR = ADDR_FIXED;        /* address mode write         */
-  xDmaSetup.AUTOINIT  = AUTOINIT_OFF;      /* autoinit                   */
-  // - setting DMA control packets
-  dmaSetCtrlPacket(DMA_CH1,xDmaSetup);
-  // - setting the DMA channel to trigger on h/w request */
-  dmaSetChEnable(DMA_CH1, DMA_HW);
-  // start the transmission
-  spiREG3->DAT0 = (uint32)*message;
+  xDmaSetup.SADD      = (uint32)message;                     /* source address */
+  xDmaSetup.DADD      = (uint32)(&mibspiRAM3->tx[0].data)+1; /* destination  address */
+
+  xDmaSetup.CHCTRL    = 0;                                   /* channel control            */
+  xDmaSetup.PORTASGN  = 4;                                   /* port b                     */
+  xDmaSetup.TTYPE     = FRAME_TRANSFER;                      /* transfer type block/frame  */
+  xDmaSetup.ADDMODERD = ADDR_INC1;                           /* address mode read          */
+  xDmaSetup.ADDMODEWR = ADDR_FIXED;                         /* address mode write         */
+  xDmaSetup.AUTOINIT  = AUTOINIT_ON;                         /* Auto-initiation mode       */
+  
+  xDmaSetup.ELCNT     = SPIFRAMESIZE;                        /* element count in a frame   */
+  xDmaSetup.FRCNT     = length / SPIFRAMESIZE;               /* frame count in a block     */
+
+  xDmaSetup.ELSOFFSET = SPIFRAMESIZE;                        /* element source offset      */
+  xDmaSetup.ELDOFFSET = 0;                                   /* element destination offset */
+
+  xDmaSetup.FRSOFFSET = 0;                                   /* frame destination offset   */
+  xDmaSetup.FRDOFFSET = 0;                                   /* frame destination offset   */
+
+  xDmaSetup.RDSIZE    = ACCESS_8_BIT;                        /* read size                  */
+  xDmaSetup.WRSIZE    = ACCESS_8_BIT;                        /* write size                 */
+
+  dmaSetCtrlPacket(DMA_CH1, xDmaSetup);
+  /* set correct COUNT after which DMA requests are no longer issued */
+  mibspiREG3->DMACOUNT[1] &= 0x0000FFFF;
+  mibspiREG3->DMACOUNT[1] |= (length - 1) << 16;
+
+  /* DMA req is disabled after COUNT reaches 0, re-enable for next transfer */
+  mibspiREG3->DMACTRL[1] |= ( 1ul << 14); /* Transmit data DMA channel enable */
 }
 
 static uint64_t crcDMACalculate (uint8_t length, uint8_t * message){

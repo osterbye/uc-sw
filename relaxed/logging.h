@@ -68,4 +68,15 @@ LOG_CRITICAL is reserved for errors from which system cannot recover
 
 void loggingInit();
 
+/**
+ * @brief Collect bytes into buffer and print them out once the buffer is filled
+ * This is helper function for debugging the behavior of streams where it is too expensive
+ * to print out each character as they come. Instead, they are converted to hex strings and
+ * collected into string with max length of LOGGING_BUFFER_LENGTH. Once the maximum length is
+ * reached, the buffer is fluashed to debugging UART.
+ *
+ * @param c A single character to be collected
+ */
+void loggingCollectAndDump(char c);
+
 #endif /* RELAXED_LOGGING_H_ */
