@@ -53,8 +53,8 @@
 #include "adc.h"
 #include "can.h"
 #include "gio.h"
+#include "mibspi.h"
 #include "sci.h"
-#include "spi.h"
 #include "het.h"
 #include "dcc.h"
 #include "i2c.h"
@@ -171,6 +171,46 @@ void i2cNotification(i2cBASE_t *i2c, uint32 flags)
 }
 
 /* USER CODE BEGIN (22) */
+#include "logging.h"
+/* USER CODE END */
+#pragma WEAK(mibspiNotification)
+void mibspiNotification(mibspiBASE_t *mibspi, uint32 flags)
+{
+/*  enter user code between the USER CODE BEGIN and USER CODE END. */
+/* USER CODE BEGIN (25) */
+	LOG_PRINTF("SPIFLG (28.9.5) %04X: ", flags);
+    if (flags & 1 << 0)
+        LOG_PRINTF("DLENERR ");
+    if (flags & 1 << 1)
+        LOG_PRINTF("TIMEOUT ");
+    if (flags & 1 << 2)
+        LOG_PRINTF("PARERR ");
+    if (flags & 1 << 3)
+        LOG_PRINTF("DESYNC ");
+    if (flags & 1 << 4)
+        LOG_PRINTF("BUTERR ");
+    if (flags & 1 << 6)
+        LOG_PRINTF("RXOVRNINT ");
+    if (flags & 1 << 8)
+        LOG_PRINTF("RXINT ");
+    if (flags & 1 << 9)
+        LOG_PRINTF("TXINT ");
+    if (flags & 1 << 24)
+        LOG_PRINTF("BUFINITACTIVE ");
+    LOG_PRINTF("\n\r");
+/* USER CODE END */
+}
+
+/* USER CODE BEGIN (26) */
+/* USER CODE END */
+#pragma WEAK(mibspiGroupNotification)
+void mibspiGroupNotification(mibspiBASE_t *mibspi, uint32 group)
+{
+/*  enter user code between the USER CODE BEGIN and USER CODE END. */
+/* USER CODE BEGIN (27) */
+/* USER CODE END */
+}
+/* USER CODE BEGIN (28) */
 /* USER CODE END */
 
 #pragma WEAK(sciNotification)
@@ -182,26 +222,6 @@ void sciNotification(sciBASE_t *sci, uint32 flags)
 }
 
 /* USER CODE BEGIN (30) */
-/* USER CODE END */
-#pragma WEAK(spiNotification)
-void spiNotification(spiBASE_t *spi, uint32 flags)
-{
-/*  enter user code between the USER CODE BEGIN and USER CODE END. */
-/* USER CODE BEGIN (31) */
-/* USER CODE END */
-}
-
-/* USER CODE BEGIN (32) */
-/* USER CODE END */
-#pragma WEAK(spiEndNotification)
-void spiEndNotification(spiBASE_t *spi)
-{
-/*  enter user code between the USER CODE BEGIN and USER CODE END. */
-/* USER CODE BEGIN (33) */
-/* USER CODE END */
-}
-
-/* USER CODE BEGIN (34) */
 /* USER CODE END */
 
 #pragma WEAK(pwmNotification)

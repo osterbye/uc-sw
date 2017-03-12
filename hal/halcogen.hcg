@@ -303,7 +303,8 @@
         <NAME>mibspi.h</NAME>
       </HDRMIBSPI>
       <SRCMIBSPI>
-        </SRCMIBSPI>
+        <NAME>mibspi.c</NAME>
+      </SRCMIBSPI>
       <HDRSPI_R>
         <NAME>reg_spi.h</NAME>
       </HDRSPI_R>
@@ -311,8 +312,7 @@
         <NAME>spi.h</NAME>
       </HDRSPI>
       <SRCSPI>
-        <NAME>spi.c</NAME>
-      </SRCSPI>
+        </SRCSPI>
       <HDRCAN_R>
         <NAME>reg_can.h</NAME>
       </HDRCAN_R>
@@ -632,7 +632,7 @@
         <PATH>include\mibspi.h</PATH>
       </HDRMIBSPI>
       <SRCMIBSPI>
-        <PATH></PATH>
+        <PATH>source\mibspi.c</PATH>
       </SRCMIBSPI>
     </FILENAMES>
   </MIBSPI>
@@ -645,7 +645,7 @@
         <PATH>include\spi.h</PATH>
       </HDRSPI>
       <SRCSPI>
-        <PATH>source\spi.c</PATH>
+        <PATH></PATH>
       </SRCSPI>
     </FILENAMES>
   </SPI>
