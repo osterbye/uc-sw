@@ -343,11 +343,11 @@ typedef struct het_config_reg
                                 | (uint32)0x00000000U \
                                 | (uint32)0x00000000U \
                                 | (uint32)0x00000000U \
+								| (uint32)0x00100000U \
 								| (uint32)0x00000000U \
+								| (uint32)0x00040000U \
 								| (uint32)0x00000000U \
-								| (uint32)0x00000000U \
-								| (uint32)0x00000000U \
-								| (uint32)0x00000000U \
+								| (uint32)0x00010000U \
 								| (uint32)0x00000000U \
 								| (uint32)0x00000000U \
 								| (uint32)0x00000000U \
@@ -815,7 +815,7 @@ void hetInit(void);
 /* PWM Interface Functions */
 void   pwmStart(hetRAMBASE_t * hetRAM,uint32 pwm);
 void   pwmStop(hetRAMBASE_t * hetRAM,uint32 pwm);
-void   pwmSetDuty(hetRAMBASE_t * hetRAM,uint32 pwm, uint32 pwmDuty);
+void   pwmSetDuty(hetRAMBASE_t * hetRAM,uint32 pwm, float pwmDuty);
 void   pwmSetSignal(hetRAMBASE_t * hetRAM,uint32 pwm, hetSIGNAL_t signal);
 void   pwmGetSignal(hetRAMBASE_t * hetRAM,uint32 pwm, hetSIGNAL_t *signal);
 void   pwmEnableNotification(hetBASE_t * hetREG,uint32 pwm, uint32 notification);

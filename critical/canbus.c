@@ -225,8 +225,8 @@ void vAp102DriveControlTest(void *pvParameters){
 	vTaskDelay(10 / portTICK_PERIOD_MS);
 
 	while(1){
-		speed += 100.1;
-		direction -= 100.2;
+		speed += 10.1;
+		direction -= 10.2;
 		cnt++;
 
 		Set_Ap102Speed(speed);

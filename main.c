@@ -30,6 +30,7 @@
 #include "doorlock.h"
 
 void vHeartbeat (void *pvParameters);
+void vPwmTest (void *pvParameters);
 void vSeatSensors(void *pvParameters);
 
 void vApplicationMallocFailedHook( void ) {
@@ -65,8 +66,9 @@ void main(void){
   task_create(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(vDoorlock,  "DOORLOCK", 100, NULL, 2, NULL);
   task_create(vAp102DriveControl,  "AP102-CRTL", 100, NULL, 2, NULL);
-  //task_create(vAp102DriveControlTest, "AP102-CTRL-TST", 100, NULL, 2, NULL);
+  task_create(vAp102DriveControlTest, "AP102-CTRL-TST", 100, NULL, 2, NULL);
   //task_create(commandExecutionTest, "COMMANDTEST", 100, NULL, 3, NULL);
+  task_create(vPwmTest, "SERVO_PWM_TEST", 100, NULL, 2, NULL);
 
   //vTaskStartTrace(&traceBuff[0], 255);
 
@@ -81,9 +83,23 @@ void main(void){
 }
 
 void vHeartbeat(void *pvParameters) {
+	while(1){
+		gioToggleBit(gioPORTB, 1);
+		vTaskDelay(500 / portTICK_PERIOD_MS);
+	}
+}
+void vPwmTest(void *pvParameters) {
+
+	pwmSetDuty(hetRAM1,pwm0, 10);
+	pwmStart(hetRAM1,pwm0);
+
+
   while(1){
     gioToggleBit(gioPORTB, 1);
-    vTaskDelay(500 / portTICK_PERIOD_MS);
+    pwmSetDuty(hetRAM1,pwm0, 5);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    pwmSetDuty(hetRAM1,pwm0, 10);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
   }
 }
 
