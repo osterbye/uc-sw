@@ -815,7 +815,7 @@ void hetInit(void);
 /* PWM Interface Functions */
 void   pwmStart(hetRAMBASE_t * hetRAM,uint32 pwm);
 void   pwmStop(hetRAMBASE_t * hetRAM,uint32 pwm);
-void   pwmSetDuty(hetRAMBASE_t * hetRAM,uint32 pwm, float pwmDuty);
+void   pwmSetDuty(hetRAMBASE_t * hetRAM,uint32 pwm, uint32 pwmDuty);
 void   pwmSetSignal(hetRAMBASE_t * hetRAM,uint32 pwm, hetSIGNAL_t signal);
 void   pwmGetSignal(hetRAMBASE_t * hetRAM,uint32 pwm, hetSIGNAL_t *signal);
 void   pwmEnableNotification(hetBASE_t * hetREG,uint32 pwm, uint32 notification);
@@ -854,6 +854,7 @@ void het2GetConfigValue(het_config_reg_t *config_reg, config_value_type_t type);
 void hetNotification(hetBASE_t *het, uint32 offset);
 
 /* USER CODE BEGIN (2) */
+void pwmSetDutyFloat(hetRAMBASE_t * hetRAM, uint32 pwm, float pwmDuty);
 /* USER CODE END */
 
 /**@}*/

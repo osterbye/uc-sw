@@ -2823,7 +2823,7 @@ void pwmStop( hetRAMBASE_t * hetRAM, uint32 pwm)
 /* SourceId : HET_SourceId_004 */
 /* DesignId : HET_DesignId_004 */
 /* Requirements : HL_SR366 */
-void pwmSetDuty(hetRAMBASE_t * hetRAM, uint32 pwm, float pwmDuty)
+void pwmSetDuty(hetRAMBASE_t * hetRAM, uint32 pwm, uint32 pwmDuty)
 {
     uint32 action;
     uint32 pwmPolarity =0U;
@@ -2852,7 +2852,7 @@ void pwmSetDuty(hetRAMBASE_t * hetRAM, uint32 pwm, float pwmDuty)
     }
 
     hetRAM->Instruction[(pwm << 1U) + 41U].Control = ((hetRAM->Instruction[(pwm << 1U) + 41U].Control) & (~(uint32)(0x00000018U))) | (action << 3U);
-    hetRAM->Instruction[(pwm << 1U) + 41U].Data = ((((uint32)(pwmPeriod * pwmDuty) / 100U)) << 7U) + 128U;
+    hetRAM->Instruction[(pwm << 1U) + 41U].Data = (((pwmPeriod * pwmDuty) / 100U) << 7U) + 128U;
 }
 
 
@@ -3185,6 +3185,57 @@ uint32 hetGetTimestamp(hetRAMBASE_t * hetRAM)
 }
 
 /* USER CODE BEGIN (4) */
+/** @fn void pwmSetDuty(hetRAMBASE_t * hetRAM, uint32 pwm, float pwmDuty)
+*   @brief Set duty cycle
+*   @param[in] hetRAM Pointer to HET RAM:
+*              - hetRAM1: HET1 RAM pointer
+*              - hetRAM2: HET2 RAM pointer
+*   @param[in] pwm Pwm signal:
+*              - pwm0: Pwm 0
+*              - pwm1: Pwm 1
+*              - pwm2: Pwm 2
+*              - pwm3: Pwm 3
+*              - pwm4: Pwm 4
+*              - pwm5: Pwm 5
+*              - pwm6: Pwm 6
+*              - pwm7: Pwm 7
+*   @param[in] pwmDuty duty cycle in %.
+*
+*   Sets a new duty cycle on the given pwm signal, modification of function
+*   pwmSetDuty(). Original function is not precise enough because duty
+*   cycle is passed as integer value 0-100. This variant passes it as a float.
+*/
+void pwmSetDutyFloat(hetRAMBASE_t * hetRAM, uint32 pwm, float pwmDuty)
+{
+    uint32 action;
+    uint32 pwmPolarity =0U;
+    uint32 pwmPeriod = hetRAM->Instruction[(pwm << 1U) + 42U].Data + 128U;
+    pwmPeriod = pwmPeriod >> 7U;
+
+    if(hetRAM == hetRAM1)
+    {
+        pwmPolarity = s_het1pwmPolarity[pwm];
+    }
+    else
+    {
+        pwmPolarity = s_het2pwmPolarity[pwm];
+    }
+    if (pwmDuty == 0U)
+    {
+        action = (pwmPolarity == 3U) ? 0U : 2U;
+    }
+    else if (pwmDuty >= 100U)
+    {
+        action = (pwmPolarity == 3U) ? 2U : 0U;
+    }
+    else
+    {
+        action = pwmPolarity;
+    }
+
+    hetRAM->Instruction[(pwm << 1U) + 41U].Control = ((hetRAM->Instruction[(pwm << 1U) + 41U].Control) & (~(uint32)(0x00000018U))) | (action << 3U);
+    hetRAM->Instruction[(pwm << 1U) + 41U].Data = ((((uint32)(pwmPeriod * pwmDuty) / 100U)) << 7U) + 128U;
+}
 /* USER CODE END */
 
 

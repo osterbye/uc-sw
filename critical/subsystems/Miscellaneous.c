@@ -42,13 +42,13 @@ void commandExecution_AP102CTRL(const CommandRequest * request) {
     if (request->argument.ap102Control.has_speed ) {
       pwmDuty = request->argument.ap102Control.speed;
       pwmDuty *= AP102_COEF_SPEED;
-      pwmSetDuty(hetRAM1, pwm0, pwmDuty);
-      pwmSetDuty(hetRAM1, pwm1, pwmDuty);
+      pwmSetDutyFloat(hetRAM1, pwm0, pwmDuty);
+      pwmSetDutyFloat(hetRAM1, pwm1, pwmDuty);
     }
     if (request->argument.ap102Control.has_direction) {
       pwmDuty = request->argument.ap102Control.direction;
       pwmDuty *= AP102_COEF_STEERING;
-      pwmSetDuty(hetRAM1, pwm2, pwmDuty);
+      pwmSetDutyFloat(hetRAM1, pwm2, pwmDuty);
     }
     Set_Ap102Cnt(request->counter);
   }
