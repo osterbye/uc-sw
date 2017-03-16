@@ -64,8 +64,7 @@ void main(void){
   task_create(vSeatSensors, "SEATSENSORS", 400, NULL, 2, NULL);
   task_create(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(vDoorlock,  "DOORLOCK", 100, NULL, 2, NULL);
-  task_create(vAp102DriveControl,  "AP102-CRTL", 100, NULL, 2, NULL);
-  task_create(vAp102DriveControlTest, "AP102-CTRL-TST", 100, NULL, 2, NULL);
+
   //task_create(commandExecutionTest, "COMMANDTEST", 100, NULL, 3, NULL);
   task_create(vPwmTest, "SERVO_PWM_TEST", 100, NULL, 2, NULL);
 

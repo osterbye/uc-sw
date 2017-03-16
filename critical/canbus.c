@@ -183,60 +183,6 @@ static void receiveVehicleLocked(const CanMessage_t * msg) {
     //LOG_INFO("receiveVehicleLocked");
 }
 
-void vAp102DriveControl(void *pvParameters){
-	int16_t speed = 0;
-	int16_t direction = 0;
-	uint32_t cnt = 0;
-
-	while (1){
-		uint8_t canMessage[8] = {0};
-		speed = Get_Ap102Speed();
-		if(speed > 1000){
-			speed = 1000;
-		} else if (speed < -1000){
-			speed = -1000;
-		}
-		direction = Get_Ap102Direction();
-		if(direction > 1000){
-			direction = 1000;
-		} else if (direction < -1000){
-			direction = -1000;
-		}
-		cnt = Get_Ap102Cnt();
-
-		canMessage[0] = (int16_t) speed & 0xFF;
-		canMessage[1] = ((int16_t) speed >> 8) & 0xFF;
-		canMessage[2] = (int16_t) direction & 0xFF;;
-		canMessage[3] = ((int16_t) direction >> 8) & 0xFF;;
-		canMessage[4] = (uint8_t) cnt;
-
-		canbusSendMessage(CANBUS3, 100, 8, canMessage);
-		//LOG_INFO("sent ap102 ctrl message")
-		vTaskDelay(30 / portTICK_PERIOD_MS); // wait for 30ms and send next message
-	}
-
-}
-
-void vAp102DriveControlTest(void *pvParameters){
-	float speed = 0;
-	float direction = 0;
-	uint32_t cnt = 0;
-
-	vTaskDelay(10 / portTICK_PERIOD_MS);
-
-	while(1){
-		speed += 10.1;
-		direction -= 10.2;
-		cnt++;
-
-		Set_Ap102Speed(speed);
-		Set_Ap102Direction(direction);
-		Set_Ap102Cnt(cnt);
-		vTaskDelay(23 / portTICK_PERIOD_MS);
-	}
-
-}
-
 typedef struct {
     uint32_t id;
     void (* handlerFunction)(const CanMessage_t *);

@@ -37,7 +37,5 @@ typedef struct {
 void canbusInit();
 void canbusDmaNotification(dmaInterrupt_t inttype, uint32 channel);
 void canbusTask(void *pvParameters);
-void vAp102DriveControl(void *pvParameters);
-void vAp102DriveControlTest(void *pvParameters);
 
 #endif /* CANBUS_H */
