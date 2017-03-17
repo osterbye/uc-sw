@@ -12,8 +12,9 @@ cd tmp/proto2cGeneration &&
 #fi
 #cd proto2cGeneration &&
 if [ ! -d "nanopb" ]; then
-    echo 'Cloining nanopb repository' &&
-    git clone https://github.com/nanopb/nanopb.git 
+    echo 'Cloning nanopb repository' &&
+    git clone --branch https://github.com/nanopb/nanopb.git 
+    git checkout nanopb-0.3.7 # apparently the HEAD has broken code generation
 fi
 echo 'Generating nanopb protoc plugin'
 ( cd nanopb/generator/proto/ && make )
@@ -22,6 +23,8 @@ protoc --plugin=protoc-gen-nanopb=./nanopb/generator/protoc-gen-nanopb  --nanopb
 #get back to project root directory
 cd ../..
 
+echo 'Generating python module from proto definition' &&
+protoc -I=intercomm intercomm/MessageDefinitions.proto --python_out=scripts
 echo 'Generating command execution code' &&
 python3 scripts/gen_command_execution.py &&
 echo 'executing protoc to generate python lib from proto file...'  &&

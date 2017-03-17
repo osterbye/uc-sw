@@ -10,6 +10,7 @@
 	X(LIGHTS              ) \
 	X(DRIVETRAIN          ) \
 	X(AP102CTRL           ) \
+	X(SETMOTORCALIBRATION ) \
 
 // function definitions
 #define X(commandType)   void commandExecution_##commandType(const CommandRequest * request);

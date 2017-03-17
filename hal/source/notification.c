@@ -65,6 +65,7 @@
 #include "sys_dma.h"
 
 /* USER CODE BEGIN (0) */
+//#define SPI_LOG_ERRORS /* useful for debugging, but dangerous in runtime (executes blocking UART writes in IRQ) */
 /* USER CODE END */
 #pragma WEAK(esmGroup1Notification)
 void esmGroup1Notification(uint32 channel)
@@ -178,6 +179,7 @@ void mibspiNotification(mibspiBASE_t *mibspi, uint32 flags)
 {
 /*  enter user code between the USER CODE BEGIN and USER CODE END. */
 /* USER CODE BEGIN (25) */
+#ifdef SPI_LOG_ERRORS
 	LOG_PRINTF("SPIFLG (28.9.5) %04X: ", flags);
     if (flags & 1 << 0)
         LOG_PRINTF("DLENERR ");
@@ -198,6 +200,7 @@ void mibspiNotification(mibspiBASE_t *mibspi, uint32 flags)
     if (flags & 1 << 24)
         LOG_PRINTF("BUFINITACTIVE ");
     LOG_PRINTF("\n\r");
+#endif /* SPI_LOG_ERRORS */
 /* USER CODE END */
 }
 

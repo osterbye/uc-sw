@@ -9,6 +9,7 @@
 #include "crc.h"
 #include "spi.h"
 #include "sys_dma.h"
+#include "mibspi.h"
 
 /* FreeRTOS includes */
 #include "FreeRTOS.h"
@@ -25,6 +26,7 @@
 #include "cmCommunication.h"
 #include "spiTransport.h"
 #include "canbus.h"
+#include "subsystems.h"
 #include "het.h"
 
 #include "doorlock.h"
@@ -46,7 +48,6 @@ void task_create(TaskFunction_t pxTaskCode, const char * const pcName, const uin
     }
 }
 
-
 void main(void){
   loggingInit();
   gioInit(); // General input output
@@ -54,6 +55,7 @@ void main(void){
   mibspiInit();
   hetInit();
   canbusInit();
+  initializeMotors();
 
   
   LOG_INFO("Creating tasks");
@@ -61,9 +63,9 @@ void main(void){
   task_create(vSpiRx, "SPIRX", 400, NULL, 1 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(vSpiTx, "SPITX", 400, NULL, 2 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
   task_create(sendStatusTask, "SENDSTATUS", 800, NULL, 2, NULL);
-  task_create(vSeatSensors, "SEATSENSORS", 400, NULL, 2, NULL);
-  task_create(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
-  task_create(vDoorlock,  "DOORLOCK", 100, NULL, 2, NULL);
+  //task_create(vSeatSensors, "SEATSENSORS", 400, NULL, 2, NULL);
+  //task_create(canbusTask,   "CANBUS",    400, NULL, 3 | portPRIVILEGE_BIT, NULL); // privileged mode needed for dma
+  //task_create(vDoorlock,  "DOORLOCK", 100, NULL, 2, NULL);
 
   //task_create(commandExecutionTest, "COMMANDTEST", 100, NULL, 3, NULL);
   task_create(vPwmTest, "SERVO_PWM_TEST", 100, NULL, 2, NULL);
@@ -112,7 +114,7 @@ void vSeatSensors(void *pvParameters) {
 		any[2] = Get_seatOccupiedRL();
 		Set_seatOccupiedRR(0x1^gioGetBit(hetPORT1, 19));
 		any[3] = Get_seatOccupiedRR();
-		LOG_INFO("seats: %d %d %d %d\n", any[0], any[1], any[2], any[3]);
+		//LOG_INFO("seats: %d %d %d %d", any[0], any[1], any[2], any[3]);
 	    vTaskDelay(200 / portTICK_PERIOD_MS);
 	}
 }
